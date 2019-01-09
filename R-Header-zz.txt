@@ -1,0 +1,81 @@
+
+	#' ---
+	#' title: `r rev(strsplit(rstudioapi::getSourceEditorContext()$path, split = "/")[[1]])[1]`
+	#' subtitle: 
+	#' author: "Author: Ankur Shringi <br>
+	#' email: . ankurshringi@iisc.ac.in <br> <br>
+	#' Project: `r rev(strsplit(rstudioapi::getActiveProject(), split = "/")[[1]])[1]` <br><br> Enter Following command to execute it. <br>
+	#' `export2html('`r rev(strsplit(rstudioapi::getSourceEditorContext()$path, split = "/")[[1]])[1]`', folder = 'Output-R-Html', suppress_warnings = TRUE, browse = TRUE)` <br><br>
+	#' Date created: <br> `r paste0(format(Sys.time(), format = "%Y-%b-%d %H:%M:%S "), weekdays(as.Date(Sys.Date(),'%d-%m-%Y')))` <br><br> Last updated on"
+	#' output:
+	#'    html_document:
+	#'      toc: true
+	#'      number_sections: true
+	#'      theme: lumen #yeti
+	#'      highlight: kate #zenburn
+	#' ---
+	#+ echo = FALSE
+	# ================================================================ --------
+	#+ test, results= 'asis', echo = FALSE
+	sink("NUL")
+	xxxx <- gototop()
+	sink(xxxx); rm(xxxx)
+	#' # Initialization
+	#+ echo = FALSE
+	# Loading utility function used by Ankur ----------------------------------
+	#' ## Loading utility function used by Ankur
+	source("C:/Users/Ankur/hubiC/Work/Projects/Utilities/util_Global/util_Global.R")
+	#+ echo = FALSE
+	# Deleting R-Environment Variables (Except utility functions) -------------
+	#' ## Deleting R-Environment Variables (Except utility functions)
+	clr()
+	#+ echo = FALSE
+	# Loading required packages -----------------------------------------------
+	#'## Loading required packages
+	Packages <-     c("tidyverse","roxygen2Comment")
+	install(Packages); rm(Packages)
+	#+ echo = FALSE
+	# Start of the real coding ------------------------------------------------
+	#+ results= 'asis', echo = FALSE
+	sink("NUL") # use /dev/null in UNIX
+	xxxx <- gototop()
+	sink(xxxx); rm(xxxx)
+	
+	#' # Start of the real coding
+	#+ echo = FALSE
+	# ---------------------------------------------------------------- --------
+	
+	#+ echo = FALSE
+	# ---------------------------------------------------------------- --------
+	#+ echo = FALSE
+	# End of the coding -------------------------------------------------------
+	#+ results= 'asis', echo = FALSE
+	sink("NUL");
+	xxxx <- gototop();
+	sink(xxxx)
+	rm(xxxx)
+	#' # Termination
+	#+ echo = FALSE
+	# ================================================================ --------
+	# Session Info ------------------------------------------------------------
+	#' ## Session Info
+	# runInfo()
+	
+snippet section
+	#+ echo = FALSE 
+	# 01a.------ 
+	#' ##   
+	 
+	#+ results= 'asis', echo = FALSE 
+	#' sink("NULL")
+	xxxx <- hr()
+	sink(xxxx); rm(xxxx)
+	
+snippet date
+	`r format(Sys.time(), format = "%Y-%b-%d %H:%M:%S " %+% weekdays(as.Date(Sys.Date(),'%d-%m-%Y')))`
+	
+snippet file
+	`r rev(strsplit(rstudioapi::getSourceEditorContext()$path, split = "/")[[1]])[1]`
+	
+snippet project
+	`r rev(strsplit(rstudioapi::getActiveProject(), split = "/")[[1]])[1]`
