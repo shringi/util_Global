@@ -41,5 +41,7 @@ vignettes/*.pdf
 *.xls
 *.xlsx
 
+Output-R-Html/*
+
 # System files
 *.DS_Store
