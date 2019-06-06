@@ -986,4 +986,23 @@ sink("NULL")
 xxxx <- hr()
 sink(xxxx); rm(xxxx)
 
+# is.attrib.same ---------------
+#' Crosscheck whether two data sets are same in some columns
+#' Checks the internal consistency of the data by a particular column
+
+is.attrib.same <- function(df, by_col, attrib_cols){
+  # Check that by_col and attrib_cols are mutually exclusive
+  if (length(intersect(by_col,attrib_cols)) != 0) {
+    stop(sprintf("by_col and attrib_cols have operlapping column: %s",intersect(by_col,attrib_cols)))
+  } else {
+    # Filtering rows where there are conflicting values for a tag
+    # Removing columns which are consistent!
+    # First term generates the string of TRUE by numbers of by_col
+    # Second term checks whether all the entries in the attrib_cols columns are TRUE or not. If it is not then it filters it.
+    df_check <- df %>% select(by_col, attrib_cols) %>% group_by_(by_col) %>% summarise_all(all.same) %>%
+      filter_at(vars(attrib_cols), any_vars(. == FALSE )) %>%
+      select_if(c(rep(TRUE, length(by_col)), sapply(.[attrib_cols], all) == FALSE))
+    return(df_check)
+  }
+}
 
