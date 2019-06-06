@@ -718,16 +718,21 @@ gototop <- function(x = 1){
 }
 # export to html
 #' export2html(".R")
-export2html <- function(filename, folder = 'Output-R-Html', suppress_warnings = TRUE, browse = TRUE){
+export2html <- function(filename, folder = 'Output-R-Html', suppress_warnings = TRUE, browse = TRUE) {
   if (suppress_warnings) {
     suppressWarnings(rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE))
   } else {
     rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE)
   }
   if (browse) {
-    html_name <- paste0(folder,"/",substr(filename,
-                                          start = 1, nchar(filename) - 2), ".html")
-    browseURL(html_name, getOption("browser"))
+    file_wt_ext <- folder %/% substr(filename, start = 1, nchar(filename) - 2)
+    if (file.exists(file_wt_ext %+% ".html")) {
+      browseURL(file_wt_ext %+% ".html", getOption("browser"))
+    } else if (file.exists(file_wt_ext %+% ".nb.html")) {
+      browseURL(file_wt_ext %+% ".nb.html", getOption("browser"))
+    } else {
+      stop("Corresponding html file doesnt exists!!")
+    }
   }
 }
 
