@@ -1,77 +1,16 @@
-snippet header
-	#' ---
-	#' title: `r rev(strsplit(rstudioapi::getSourceEditorContext()$path, split = "/")[[1]])[1]`
-	#' subtitle: |
-	#'
-	#'author:
-	#'  - name: Ankur Shringi
-	#'    email: ankurshringi@iisc.ac.in
-	#'    affiliation: Centre for Ecological Sciences, Indian Institute of Science, Bangalore, India <www.google.com>
-	#'abstract: adkjh
-	#'output:
-	#'  html_document:
-	#'    self_contained: true
-	#'    toc: true
-	#'    toc_depth: 2
-	#'    number_sections: true
-	#'    toc_type: float
-	#'    toc_float: true
-	#'    highlight: kate
-	#'    toc_collapsed: false
-	#'---
-	#'*****
-	#' Project: `r rev(strsplit(rstudioapi::getActiveProject(), split = "/")[[1]])[1]` <br><br> Enter Following command to execute it. <br>
-	#' `export2html('`r rev(strsplit(rstudioapi::getSourceEditorContext()$path, split = "/")[[1]])[1]`', folder = 'Output-R-Html', suppress_warnings = TRUE, browse = TRUE)` <br><br>
-	#' Date created: <br> `r paste0(format(Sys.time(), format = "%Y-%b-%d %H:%M:%S "), weekdays(as.Date(Sys.Date(),'%d-%m-%Y')))` <br><br>
-	#+ echo = FALSE
-	# ================================================================ --------
-	#'*****
-	#' # Initialization
-	#+ echo = FALSE
-	# Loading utility function used by Ankur ----------------------------------
-	#' ## Loading utility function used by Ankur
+	# Author: Ankur Shringi (ankurshringi@iisc.ac.in)
+	# title: `r rev(strsplit(rstudioapi::getSourceEditorContext()$path, split = "/")[[1]])[1]`
+	# subtitle: ...
+	# abstract: ...
+	# Project: `r rev(strsplit(rstudioapi::getActiveProject(), split = "/")[[1]])[1]`
+	# Date created: `r paste0(format(Sys.time(), format = "%Y-%b-%d %H:%M:%S "), weekdays(as.Date(Sys.Date(),'%d-%m-%Y')))`
+	# Enter following command to render the code as html
+	# `render()`
+	# Initialization ----------------------------------------------------------
+	# Loading custom made utility functions
 	source("C:/Users/Ankur/hubiC/Work/Projects/Utilities/util_Global/util_Global.R")
-	#+ echo = FALSE
-	# Deleting R-Environment Variables (Except utility functions) -------------
-	#' ## Deleting R-Environment Variables (Except utility functions)
+	# Deleting R-Environment Variables (Except utility functions)
 	clr()
-	#+ echo = FALSE
-	# Loading required packages -----------------------------------------------
-	#'## Loading required packages
-	Packages <-     c("tidyverse","roxygen2Comment")
+	# Loading required packages
+	Packages <-     c("tidyverse", "roxygen2Comment")
 	install(Packages); rm(Packages)
-	#+ echo = FALSE
-	# Start of the real coding ------------------------------------------------
-	#'*****
-	#' # Start of the real coding
-	#+ echo = FALSE
-	# ---------------------------------------------------------------- --------
-	
-	#+ echo = FALSE
-	# ---------------------------------------------------------------- --------
-	#+ echo = FALSE
-	# End of the coding -------------------------------------------------------
-	#'*****
-	#' # Termination
-	#+ echo = FALSE
-	# ================================================================ --------
-	# Session Info ------------------------------------------------------------
-	#' ## Session Info
-	# runInfo()
-	
-snippet section
-	#+ echo = FALSE 
-	# 01a.------ 
-	#' ##   
-	 
-	#+ results= 'asis', echo = FALSE 
-	#' *****
-	
-snippet date
-	`r format(Sys.time(), format = "%Y-%b-%d %H:%M:%S " %+% weekdays(as.Date(Sys.Date(),'%d-%m-%Y')))`
-	
-snippet file
-	`r rev(strsplit(rstudioapi::getSourceEditorContext()$path, split = "/")[[1]])[1]`
-	
-snippet project
-	`r rev(strsplit(rstudioapi::getActiveProject(), split = "/")[[1]])[1]
