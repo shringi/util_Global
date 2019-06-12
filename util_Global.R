@@ -1010,4 +1010,68 @@ is.attrib.same <- function(df, by_col, attrib_cols){
     return(df_check)
   }
 }
+# r2html -------------------------------------------------------------------------------------------------
+# Funtion which converts normal R code into a rmarkdown code. There already exists some implementation, for example see <https://rmarkdown.rstudio.com/articles_report_from_r_script.html> for more details.
+# This function however does an additional things.
+# 1. Converts R-section to R markdown sections
+# 2. Converts normal comments to roxygen comments automatically
+# 3. Appends detailed output format
+r2html <- function(){
+  invisible(install("dplyr"))
+  file <- rstudioapi::getSourceEditorContext()$path
+  flIn  <- readLines(file)
+  # open the file and read in all the lines
+  head <- unlist(strsplit(flIn[2:4], split = '\n'))
+  render <- unlist(strsplit(flIn[5:8], split = '\n'))
+  flIn <- flIn[-c(1:8)]
+  block <- "#'author:
+#'  - name: Ankur Shringi
+#'    email: ankurshringi@iisc.ac.in
+#'    affiliation: Centre for Ecological Sciences, Indian Institute of Science, Bangalore, India
+#'output:
+#'  html_notebook:
+#'    self_contained: true
+#'    toc: true
+#'    toc_depth: 2
+#'    number_sections: true
+#'    toc_float: true
+#'    highlight: kate
+#'---
+#'*****"
+  text_block <- unlist(strsplit(block, split = '\n'))
+  # concatenate the old file with the new text
+  flIn <- c("#'---",head,text_block,render,"#'","#'*****",flIn)
+  secStrt <- which(grepl(flIn, pattern = "# ", perl = TRUE))
+  secEnd <- which(grepl(flIn, pattern = "----", perl = TRUE))
+  comLines <- which(grepl(flIn, pattern = "^+# "))
+  secLines <- intersect(secStrt,secEnd)
+  for (i in 1:length(flIn)) {
+    if (i %in% secLines) {
+      flIn[i] <-  flIn[i] %>%
+        gsub(pattern = "[-]+$", replacement = "", x = .) %>%
+        gsub(pattern = "^+# ", replacement =  "#' ## ", x = .)
+    } else if (i %in% comLines) {
+      flIn[i] <-  flIn[i] %>%
+        gsub(pattern = "^+# ", replacement = "#' ", x = .) %+% "<br>"
+    }
+  }
+  fn = "temp.R"
+  writeLines(flIn, con = fn)
+  export2html(fn, folder = 'Output-R-Html', suppress_warnings = TRUE, browse = TRUE)
+  if (file.exists(fn))
+    #Delete file if it exists
+    file.remove(fn)
+}
+
+# opendir -----------------------------------------------------------------------------------------------
+# Function which opens the current working directory directly from the console
+# Adapted from the stackoverflow user Dason <https://stackoverflow.com/users/1003565/dason>
+# Stack overflow link <https://stackoverflow.com/questions/12135732/how-to-open-working-directory-directly-from-r-console>
+opendir <- function(dir = getwd()){
+  if (.Platform['OS.type'] == "windows") {
+    shell.exec(dir)
+  } else {
+    system(paste(Sys.getenv("R_BROWSER"), dir))
+  }
+}
 
