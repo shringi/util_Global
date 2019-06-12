@@ -5,7 +5,7 @@
 # Project: util_Global
 # Date created: 2019-Jun-11 17:04:06 Tuesday
 # Enter following command to render the code as html
-# `render()`
+# `r2html()`
 # Initialization ----------------------------------------------------------
 # Loading custom made utility functions
 source("C:/Users/Ankur/hubiC/Work/Projects/Utilities/util_Global/util_Global.R")

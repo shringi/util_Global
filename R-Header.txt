@@ -5,7 +5,7 @@
 	# Project: `r rev(strsplit(rstudioapi::getActiveProject(), split = "/")[[1]])[1]`
 	# Date created: `r paste0(format(Sys.time(), format = "%Y-%b-%d %H:%M:%S "), weekdays(as.Date(Sys.Date(),'%d-%m-%Y')))`
 	# Enter following command to render the code as html
-	# `render()`
+	# `r2html()`
 	# Initialization ----------------------------------------------------------
 	# Loading custom made utility functions
 	source("C:/Users/Ankur/hubiC/Work/Projects/Utilities/util_Global/util_Global.R")
