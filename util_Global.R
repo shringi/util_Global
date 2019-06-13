@@ -718,14 +718,18 @@ gototop <- function(x = 1){
 }
 # export to html
 #' export2html(".R")
-export2html <- function(filename, folder = 'Output-R-Html', suppress_warnings = TRUE, browse = TRUE) {
+export2html <- function(filename, folder = 'Output-R-html', suppress_warnings = TRUE, browse = TRUE, output_file = NULL) {
   if (suppress_warnings) {
-    suppressWarnings(rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE))
+    suppressWarnings(rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE,
+                                       output_file = output_file))
   } else {
-    rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE)
+    rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE, output_file = output_file)
+  }
+  if (is.null(output_file)) {
+    output_file = folder %/% substr(filename, start = 1, nchar(filename) - 2)
   }
   if (browse) {
-    file_wt_ext <- folder %/% substr(filename, start = 1, nchar(filename) - 2)
+    file_wt_ext <- folder %/% output_file
     if (file.exists(file_wt_ext %+% ".html")) {
       browseURL(file_wt_ext %+% ".html", getOption("browser"))
     } else if (file.exists(file_wt_ext %+% ".nb.html")) {
@@ -1023,6 +1027,8 @@ r2html <- function(){
   # open the file and read in all the lines
   head <- unlist(strsplit(flIn[2:4], split = '\n'))
   render <- unlist(strsplit(flIn[5:8], split = '\n'))
+  time_now <- "# Last Rendered: " %+%
+    format(Sys.time(), format = "%Y-%b-%d %H:%M:%S " %+% weekdays(as.Date(Sys.Date(),'%d-%m-%Y')))
   flIn <- flIn[-c(1:8)]
   block <- "#'author:
 #'  - name: Ankur Shringi
@@ -1040,7 +1046,7 @@ r2html <- function(){
 #'*****"
   text_block <- unlist(strsplit(block, split = '\n'))
   # concatenate the old file with the new text
-  flIn <- c("#'---",head,text_block,render,"#'","#'*****",flIn)
+  flIn <- c("#'---", head, text_block, render[1:2], time_now, render[3:4], "#'", "#'*****", flIn)
   secStrt <- which(grepl(flIn, pattern = "# ", perl = TRUE))
   secEnd <- which(grepl(flIn, pattern = "----", perl = TRUE))
   comLines <- which(grepl(flIn, pattern = "^+# "))
@@ -1055,12 +1061,13 @@ r2html <- function(){
         gsub(pattern = "^+# ", replacement = "#' ", x = .) %+% "<br>"
     }
   }
-  fn = "temp.R"
-  writeLines(flIn, con = fn)
-  export2html(fn, folder = 'Output-R-Html', suppress_warnings = TRUE, browse = TRUE)
-  if (file.exists(fn))
+  filename = basename(file)
+  fn = substr(filename, start = 1, nchar(filename) - 2)
+  writeLines(flIn, con = "temp_rmd.R")
+  export2html("temp_rmd.R", folder = 'Output-R-html', suppress_warnings = TRUE, browse = TRUE, output_file = fn)
+  if (file.exists("temp_rmd.R"))
     #Delete file if it exists
-    file.remove(fn)
+    file.remove("temp_rmd.R")
 }
 
 # opendir -----------------------------------------------------------------------------------------------
