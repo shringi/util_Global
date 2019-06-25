@@ -718,7 +718,7 @@ gototop <- function(x = 1){
 }
 # export to html
 #' export2html(".R")
-export2html <- function(filename, folder = 'Output-R-html', suppress_warnings = TRUE, browse = TRUE, output_file = NULL) {
+export2html <- function(filename, folder = 'Output-html', suppress_warnings = TRUE, browse = TRUE, output_file = NULL) {
   if (suppress_warnings) {
     suppressWarnings(rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE,
                                        output_file = output_file))
@@ -1064,7 +1064,7 @@ r2html <- function(){
   filename = basename(file)
   fn = substr(filename, start = 1, nchar(filename) - 2)
   writeLines(flIn, con = "temp_rmd.R")
-  export2html("temp_rmd.R", folder = 'Output-R-html', suppress_warnings = TRUE, browse = TRUE, output_file = fn)
+  export2html("temp_rmd.R", folder = 'Output-html', suppress_warnings = TRUE, browse = TRUE, output_file = fn)
   if (file.exists("temp_rmd.R"))
     #Delete file if it exists
     file.remove("temp_rmd.R")
