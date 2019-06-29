@@ -1082,3 +1082,32 @@ opendir <- function(dir = getwd()){
   }
 }
 
+# summary.adv -------------------------------------------------------------------------------------------
+# Function to convert summary into a nice dataframe
+summary.adv = function(data){
+  out <- data.frame(unclass(summary(data)), check.names = FALSE, stringsAsFactors = FALSE)
+  rownames(out) <- NULL
+  return(out)
+}
+
+# summary.num -------------------------------------------------------------------------------------------
+# Detailed summary of the numeric columns only
+summary.num = function(data){
+  install("summarytools")
+  out <- as.data.frame(summarytools::descr(data, transpose = TRUE))
+  rows <- rownames(out)
+  out <- out %>% mutate(SE = Std.Dev/sqrt(N.Valid)) %>% as.data.frame()
+  out$names <- rows
+  out <- out[,c(17,15,14,3,1,7,17,2,8,9,16,10,17,4,5,6,11,12,13)]
+  return(out)
+}
+
+# summary.non.num -------------------------------------------------------------------------------------------
+# Function to convert summary into a nice dataframe
+summary.non.num = function(data){
+  a <- sapply(data,class)
+  cols <- names(a[!(a %in% c("numeric", "integer")) ])
+  out <- data.frame(unclass(summary(data %>% dplyr::select(cols))), check.names = FALSE, stringsAsFactors = FALSE)
+  rownames(out) <- NULL
+  return(out)
+}
