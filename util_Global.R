@@ -755,7 +755,7 @@ i <- function(insert = c("hr","chunk","gototop","section","date")) {
     rstudioapi::insertText(text = paste0("#+ echo = FALSE \n", "# 01 ------ \n", "#' ##   \n \n", "#+ results= 'asis', echo = FALSE \n", "hr() \n"))
   } else if (insert == "date") {
     rstudioapi::insertText(text = format(Sys.time(), format = "%Y-%b-%d %H:%M:%S " %+% weekdays(as.Date(Sys.Date(),'%d-%m-%Y'))))
-    }
+  }
 }
 # Open Current Directory directly from R ---------------------------------------
 #' # Open Current Directory directly from R <br> openwd()
@@ -820,9 +820,9 @@ diary <- function(){
   widget <- datatable(table, class = 'display', filter = list(position = 'top', clear = TRUE, plain = FALSE),
                       extensions = 'FixedHeader', escape = TRUE,
                       options = list(initComplete = JS("function(settings, json) {",
-                        "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-                        "}"),
-                        paging = TRUE, searchHighlight = TRUE,search = list(smart = TRUE),pageLength = 400,
+                                                       "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+                                                       "}"),
+                                     paging = TRUE, searchHighlight = TRUE,search = list(smart = TRUE),pageLength = 400,
                                      autoWidth = TRUE, fixedHeader = TRUE,
                                      columnDefs = list(list(width = '100%', targets = "_all",
                                                             className = 'compact')))) %>%
@@ -1050,7 +1050,8 @@ r2html <- function(){
   secStrt <- which(grepl(flIn, pattern = "# ", perl = TRUE))
   secEnd <- which(grepl(flIn, pattern = "----", perl = TRUE))
   comLines <- which(grepl(flIn, pattern = "^+# "))
-  secLines <- intersect(secStrt,secEnd)
+  secLines <- intersect(secStrt, secEnd)
+  sketchLines <- which(grepl(flIn, pattern = "sketch\\(", perl = TRUE))
   for (i in 1:length(flIn)) {
     if (i %in% secLines) {
       flIn[i] <-  flIn[i] %>%
@@ -1059,6 +1060,10 @@ r2html <- function(){
     } else if (i %in% comLines) {
       flIn[i] <-  flIn[i] %>%
         gsub(pattern = "^+# ", replacement = "#' ", x = .) %+% "<br>"
+    }
+    if (i %in% sketchLines) {
+      flIn[i] <-  flIn[i] %>%
+      gsub(pattern = ')$', replacement = ', export = FALSE)', x = .)
     }
   }
   filename = basename(file)
@@ -1115,6 +1120,7 @@ summary.non.num = function(data){
 # sketch.pptx -------------------------------------------------------------------------------------------
 # Function to export the plot as editable powerpoint file
 sketch.pptx <- function(figObj, figname){
+  install("officer")
   subfolder = "Output-Graphics"
   path = subfolder %/% figname %+% "[R]" %+% ".pptx"
   if (!file.exists(path)) {
@@ -1122,41 +1128,33 @@ sketch.pptx <- function(figObj, figname){
   } else {
     out <- read_pptx(path)
   }
-
   out %>%
     add_slide(layout = "Title and Content", master = "Office Theme") %>%
     ph_with_vg(code = print(figObj), type = "body") %>%
     ph_with(value = ".", location = ph_location_type(type = "title")) %>%
     ph_with(value = paste0(format(Sys.time(), format = "%Y-%b-%d %H:%M:%S "), weekdays(as.Date(Sys.Date(), '%d-%m-%Y'))), location = ph_location_type(type = "dt")) %>%
     ph_with(value = figname, location = ph_location_type(type = "ftr")) %>%
-    ph_hyperlink(ph_label = slide_summary(doc) %>% dplyr::filter(type == "ftr") %>% dplyr::select(ph_label), type = "ftr", href = figname %+% "[R]" %+% ".pdf") %>%
+    ph_hyperlink(ph_label = slide_summary(.) %>% dplyr::filter(type == "ftr") %>% dplyr::select(ph_label), type = "ftr", href = figname %+% "[R]" %+% ".pdf") %>%
     print(target = path)
 }
 
 # sketch ------------------------------------------------------------------------------------------------
 # Function to save a singleton plot as pdf as well as ppt
-sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = TRUE){
+
+sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = TRUE, export = TRUE){
   subfolder = "Output-Graphics"
   path = getwd()
   if (!file.exists(subfolder)) {
     dir.create(file.path(path, subfolder))
   }
   figname <- prefix %+% "-" %+% figname
-  print(figObj + ggsave(path = subfolder, figname %+% "[R].pdf", width = 183, units = "mm"))
-  system(paste0("open ", shQuote(subfolder %/% figname), "[R].pdf"))
-  create_pptx(figObj = figObj, figname = figname)
-}
-sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp"){
-  subfolder = "Output-Graphics"
-  path = getwd()
-  if (!file.exists(subfolder)) {
-    dir.create(file.path(path, subfolder))
-  }
-  figname <- prefix %+% "-" %+% figname
-  print(figObj + ggsave(path = subfolder, figname %+% "[R].pdf", width = 183, units = "mm"))
-  system(paste0("open ", shQuote(subfolder %/% figname), "[R].pdf"))
-  if (ppt == TRUE) {
-    sketch.pptx(figObj = figObj, figname = figname)
+  print(figObj)
+  if (export == TRUE) {
+    ggsave(plot = figObj, path = subfolder, figname %+% "[R].pdf", width = 183, units = "mm")
+    system(paste0("open ", shQuote(subfolder %/% figname), "[R].pdf"))
+    if (ppt == TRUE) {
+      sketch.pptx(figObj = figObj, figname = figname)
+    }
   }
 }
 
