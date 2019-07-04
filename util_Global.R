@@ -405,7 +405,7 @@ char.count <- function(string, Char ="."){
 #' # Save data as csv file (no need to worry about path and extension) <br> `save.csv(data, file.name, path = getwd(), subfolder = "Output-R-Tables" )`
 #' <a href="#top"> Go back to the Table of Contents </a>
 save.csv <- function(data,file.name,path=getwd(), row.Names = FALSE,
-                     subfolder="Output-R-Tables"){
+                     subfolder="Output-Tables"){
   # In case my path has forward slash
   if (substr(path,nchar(path),nchar(path)) != "/") {
     path <- paste0(path,"/")
@@ -966,12 +966,12 @@ stat.summary <- function(colTable, group_var, df_in){
     formula.n <- "sum.adv(!is.na(" %+% var %+% "))"
     formula.se <- var.sd %+% "/sqrt(" %+% var.n %+% ")"
 
-    df_out[[f]] <- df_in %>% group_by_(group_var) %>%
+    df_out[[f]] <- df_in %>% group_by_at(vars(group_var)) %>%
       summarise(!!var.mean := eval(parse(text = formula.mean)),
                 !!var.sd := eval(parse(text = formula.sd)),
                 !!var.cv := eval(parse(text = formula.cv)),
-                !!var.max := eval(parse(text = formula.max)),
                 !!var.min := eval(parse(text = formula.min)),
+                !!var.max := eval(parse(text = formula.max)),
                 !!var.n := eval(parse(text = formula.n)),
                 !!var.se := eval(parse(text = formula.se))
       )
@@ -1099,7 +1099,7 @@ summary.adv = function(data){
 # Detailed summary of the numeric columns only
 summary.num = function(data){
   install("summarytools")
-  out <- as.data.frame(summarytools::descr(data, transpose = TRUE))
+  out <- as.data.frame(summarytools::descr(data, transpose = TRUE, round.digits = 4))
   rows <- rownames(out)
   out <- out %>% mutate(SE = Std.Dev/sqrt(N.Valid)) %>% as.data.frame()
   out$names <- rows
@@ -1120,7 +1120,7 @@ summary.non.num = function(data){
 # sketch.pptx -------------------------------------------------------------------------------------------
 # Function to export the plot as editable powerpoint file
 sketch.pptx <- function(figObj, figname){
-  install("officer")
+  install(c("officer","rvg"))
   subfolder = "Output-Graphics"
   path = subfolder %/% figname %+% "[R]" %+% ".pptx"
   if (!file.exists(path)) {
@@ -1141,7 +1141,7 @@ sketch.pptx <- function(figObj, figname){
 # sketch ------------------------------------------------------------------------------------------------
 # Function to save a singleton plot as pdf as well as ppt
 
-sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = TRUE, export = TRUE){
+sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = FALSE, export = TRUE){
   subfolder = "Output-Graphics"
   path = getwd()
   if (!file.exists(subfolder)) {
@@ -1156,6 +1156,27 @@ sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = TRUE, e
       sketch.pptx(figObj = figObj, figname = figname)
     }
   }
+}
+
+# interpolate -------------------------------------------------------------------------------------------
+# Function to interpolate the values by fitting a smooth spline
+interpolate <- function(x, y, df, y_per, graph = FALSE){
+  temp <- data.frame(x = x, y = y) %>%
+    filter(complete.cases(.)) %>%
+    group_by(x) %>%
+    summarise(y = mean(y, na.rm = TRUE))
+  x = temp$x
+  y = temp$y
+  rm(temp)
+  reg <- smooth.spline(x = x, y = y, df = df)
+  xval <- approx(x = reg$y, y = reg$x, xout = y_per)$y
+  if (graph) {
+    plot(x,y)
+    lines(reg)
+    abline(h = y_per)
+    abline(v = xval)
+  }
+  return(list(reg, xval))
 }
 
 
