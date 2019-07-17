@@ -1063,7 +1063,7 @@ r2html <- function(){
     }
     if (i %in% sketchLines) {
       flIn[i] <-  flIn[i] %>%
-      gsub(pattern = ')$', replacement = ', export = FALSE)', x = .)
+        gsub(pattern = ')$', replacement = ', export = FALSE)', x = .)
     }
   }
   filename = basename(file)
@@ -1164,19 +1164,25 @@ interpolate <- function(x, y, df, y_per, graph = FALSE){
   temp <- data.frame(x = x, y = y) %>%
     filter(complete.cases(.)) %>%
     group_by(x) %>%
-    summarise(y = mean(y, na.rm = TRUE))
-  x = temp$x
-  y = temp$y
-  rm(temp)
-  reg <- smooth.spline(x = x, y = y, df = df)
-  xval <- approx(x = reg$y, y = reg$x, xout = y_per)$y
-  if (graph) {
-    plot(x,y)
-    lines(reg)
-    abline(h = y_per)
-    abline(v = xval)
+    summarise(y = mean(y, na.rm = TRUE)) %>%
+    arrange(x)
+    if (dim(temp)[1] < 4) {
+    return(list(NA,NA))
+  } else {
+    x = temp$x
+    y = temp$y
+    df = floor(length(unique(x[!is.na(x)]))*.9)
+    rm(temp)
+    reg <- smooth.spline(x = x, y = y, df = df)
+    xval <- approx(x = reg$y, y = reg$x, xout = y_per)$y
+    if (graph) {
+      plot(x,y)
+      lines(reg)
+      abline(h = y_per)
+      abline(v = xval)
+    }
+    return(list(reg, xval))
   }
-  return(list(reg, xval))
 }
 
 
