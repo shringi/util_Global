@@ -1,30 +1,20 @@
-#' ---
-#' title: util_Global.R
-#' author: "Author: Ankur Shringi (ankurshringi@iisc.ac.in) <br>
-#' Project: Utilities <br><br> Enter Following command to execute it. <br>
-#' `rmarkdown::render('c:/Users/Ankur/hubiC/Work/Projects/Utilities/util_Global/util_Global.R', clean = TRUE, quiet = TRUE)` <br><br>
-#' Date: 2015"
-#' output:
-#'    html_document:
-#'      toc: true
-#'      number_sections: true
-#'      highlight: kate #zenburn
-#' ---
-
-#' <a href="#top"> Go back to the Table of Contents </a>
-# Ankur: Utitlity functions
+# Author: Ankur Shringi (ankurshringi@iisc.ac.in)
+# title: util_Global.R
+# subtitle: ...
+# abstract: ...
+# Project: util_Global
+# Date created: 2019-Nov-18 12:03:40 Monday
+# Enter following command to render the code as html
+# `r2html()`
 
 # Installing and Loading Packages ------------------------------------
-#' # Installing and loading packages <br> `install("dplyr")`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `install("dplyr")`
 install <- function(package1, ...)
 {
   # convert arguments to vector
-
   packages <- c(package1, ...)
 
   # check if loaded and installed
-
   loaded        <- packages %in% (.packages())
   names(loaded) <- packages
 
@@ -32,7 +22,6 @@ install <- function(package1, ...)
   names(installed) <- packages
 
   # start loop to determine if each package is installed
-
   load_it <- function(p, loaded, installed)
   {
     if (loaded[p])
@@ -60,8 +49,7 @@ install <- function(package1, ...)
 }
 
 # Plotting two varibales on different y axis -----------------------------------
-#' # Plotting two varibales on different y axis <br> `plotyy(x, y1, y2, ...)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `plotyy(x, y1, y2, ...)`
 plotyy <- function(x,y1,y2, # Required Arguments
                    y1.lim = NULL, y2.lim = NULL, # Axis limits
                    y1.lab = "", y2.lab = "", # All the labels
@@ -70,17 +58,14 @@ plotyy <- function(x,y1,y2, # Required Arguments
                    y1.pch = 19, y2.pch = 22, # Pch
                    las=1,
                    ...){
-
   par(mar = c(5,4,4,5) + .1, las = 1)
 
   # Plot 1
-
   plot(x,y1,
        ylab = y1.lab,
        ylim = y1.lim,
        pch = y1.pch, col = y1.col,
        ...)
-
   axis(2,col = y1.col,col.axis = y1.col)
 
   # Plot 2
@@ -98,18 +83,14 @@ plotyy <- function(x,y1,y2, # Required Arguments
          legend = c(y1.legend, y2.legend), text.col = c(y1.col, y2.col))
 }
 # Reseting parametes (Required when you messed up with plot parameters)---------
-#' # Reseting parametes (Required when you messed up with plot parameters) <br> `resetPar()`
-#' <a href="#top"> Go back to the Table of Contents </a>
-#fResetPar
+# `resetPar()`
 resetPar <- function() {
   dev.new();
   par(no.readonly = TRUE);
   dev.off();
-  #op
 }
 # Plotting error bars in a basic R plot ----------------------------------------
-#' # Plotting error bars in a basic R plot <br> `plotCI(x, y = NULL, uiw, liw = uiw, ...)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `plotCI(x, y = NULL, uiw, liw = uiw, ...)`
 # Plotting errorbars
 plotCI <- function(x, y = NULL, uiw, liw = uiw, ylim=NULL, sfrac = 0.01, add=FALSE,
                    col=par("col"), lwd=par("lwd"), slty=par("lty"),
@@ -141,8 +122,8 @@ plotCI <- function(x, y = NULL, uiw, liw = uiw, ylim=NULL, sfrac = 0.01, add=FAL
   invisible(list(x = x, y = y))
 }
 # Generating reg equation for a regression -------------------------------------
-#' # Generating reg equation for a regression <br> `eq.reg(reg)` <br> `lm_eqn(reg)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `eq.reg(reg)`
+# `lm_eqn(reg)`
 eq.reg <- function(reg){
   rmse <- round(sqrt(mean(resid(reg)^2)), 2)
   coefs <- summary(reg)$coefficients
@@ -174,27 +155,28 @@ eq.reg <- function(reg){
                     r^2 == .(cr2) * "," ~~
                     adj_r^2 == .(car2) * "," ~~ RMSE == .(rmse))
   }
-
 }
+
 lm_eqn <- function(reg){
   coefs <- summary(reg)$coefficients
   if (dim(coefs)[1] == 2) {
-    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,
-                     list(a = format(coef(reg)[1], digits = 2),
-                          b = format(coef(reg)[2], digits = 2),
+    eq <- substitute(y == a + b %.% x*","~~italic(r)^2~"="~r2,
+                     list(a = format(coef(reg)[[1]], digits = 2),
+                          b = format(coef(reg)[[2]], digits = 2),
                           r2 = format(summary(reg)$r.squared, digits = 3)))
   }else if (dim(coefs)[1] == 3) {
-    eq <- substitute(italic(y) == a + b %.% italic(x)+ c %.% italic(x^2)*","~~italic(r)^2~"="~r2,
-                     list(a = format(coef(reg)[1], digits = 2),
-                          b = format(coef(reg)[2], digits = 2),
-                          c = format(coef(reg)[3], digits = 2),
+    eq <- substitute(y == a + b %.% x+ c %.% x^2*","~~r^2~"="~r2,
+                     list(a = format(coef(reg)[[1]], digits = 2),
+                          b = format(coef(reg)[[2]], digits = 2),
+                          c = format(coef(reg)[[3]], digits = 2),
                           r2 = format(summary(reg)$r.squared, digits = 3)))
   }
-  as.character(as.expression(eq));
+  #as.character(as.expression(eq));
+  return(eq)
 }
 # Plotting grey confidence bars in a base R plot -------------------------------
-#' # Plotting grey confidence bars in a base R plot <br> `conf.bar(x, reg, alpha, varname = "")`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `conf.bar(x, reg, alpha, varname = "")`
+
 # Plotting grey confidence bars
 # Don't use subset inside lm
 # Keep same variable names in varname as in fitting dataframe
@@ -220,16 +202,15 @@ conf.bar <- function(x, reg, alpha, varname = ""){
     new = list()
     new[[names(reg$coefficients)[2]]] = x.temp
     lines(x.temp,predict(reg.T, newdata = new))
-
   }
-
   # intervals
   lines(newx, preds[ ,3], lty = 'dashed', col = 'red')
   lines(newx, preds[ ,2], lty = 'dashed', col = 'red')
 }
+
 # Export plots to pdf or png-----------------------------------------
-#' # Export plots to pdf or png <br> `export(filename = "test.pdf)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `export(filename = "test.pdf)`
+
 export <- function(fname){
   dev.copy(png,filename = paste0(fname,".png"),width = 2000, height = 1000,
            antialias = "cleartype", pointsize = 16)
@@ -240,9 +221,10 @@ export <- function(fname){
   dev.off()
 }
 # Opne and closing of pdf device ------------------------------------------
-#' # Opne and closing of pdf device <br> `openPdf(pdfname = "test")` <br> `closePdf(pdfname = "test")`
-#' <a href="#top"> Go back to the Table of Contents </a>
-openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "Output-R-Graphics", path = getwd()){
+# `openPdf(pdfname = "test")`
+# `closePdf(pdfname = "test")`
+
+openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "Output-Graphics", path = getwd()){
   closeFigs()
   # Opening "test.pdf"
   if (!file.exists(subfolder)) {
@@ -252,18 +234,17 @@ openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "Outpu
   {pdf(paste0(pdfname, ".pdf"), width = width, height = height, paper = "a4r",
        onefile = T, bg = "white");
     dev.control("enable")}
-
 }
 # closePdf(pdfname = "test")
-closePdf <- function(pdfname = "test", subfolder = "Output-R-Graphics"){
+closePdf <- function(pdfname = "test", subfolder = "Output-Graphics"){
   # Closing Images
   dev.off()
   # opening pdf file
   system(paste0("open ", shQuote(subfolder %/% pdfname), ".pdf"))
 }
 # Clear data or screen -------------------------------------------
-#' # Clear data or screen <br> `clr()` <br> `clr("all")`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `clr()`
+# `clr("all")`
 clr <- function(mode="notall"){
   ENV <- globalenv()
   ll <- ls(envir = ENV)
@@ -275,39 +256,36 @@ clr <- function(mode="notall"){
 }
 # clc()
 clc <- function(){cat("\014")}
+
 # Close all open figures ------
-#' # Close all open figures <br> `closeFigs()`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `closeFigs()`
 closeFigs <- function(){
   graphics.off()
 }
 
 # Convert any object to a string -----------------------------------------------
-#' # Convert any object to a string <br> `to.chr(string = objName)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `to.chr(string = objName)`
 to.chr <- function(string){
   as.character(substitute(string))
 }
+
 # Advance function for converting columns to numeric ---------------------------
-#' # Advance function for converting columns to numeric <br> `as.numeric.adv(x)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `as.numeric.adv(x)`
 as.numeric.adv <- function(x) {
-  if (class(x) == "factor") {#+ echo = FALSE
+  if (class(x) == "factor") {
     as.numeric(levels(x))[x]
   }else{
     as.numeric(x)
   }
 }
 
-#+ echo = FALSE
 # Converting a dataframe column to numeric ------
-#' ## Converting a dataframe column to numeric
 col2num <- function(df,column, use.names = FALSE){
   unlist(df[column], use.names = use.names)
 }
+
 # Converting classes of columns of dataframe -----------------------------------
-#' # Converting classes of columns of dataframe <br> `convertClass(obj = df, types = to.chr(fnin - fnic))`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `convertClass(obj = df, types = to.chr(fnin - fnic))`
 convertClass <- function(obj, types, date.origin = "1970-01-01"){
   # Input data is pure dataframe
   # Check you give the classes in lowerclass
@@ -346,8 +324,7 @@ convertClass <- function(obj, types, date.origin = "1970-01-01"){
 }
 
 # Generating unique file names -------------------------------------------------
-#' # Generating unique file names <br> `uniqueFilename(filename = "test.pdf", default = FALSE)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `uniqueFilename(filename = "test.pdf", default = FALSE)`
 #tempfile
 uniqueFilename <- function(filename, default = FALSE){
   sysTime <- format(Sys.time(), format = "%y-%b-%d-%H%M%S")
@@ -359,11 +336,10 @@ uniqueFilename <- function(filename, default = FALSE){
 }
 
 # Sandeep: Borrowed Functions
-
 # From Sandeep
 # Extracting different summary of linear model ---------------------------------
-#' # Extracting different summary of linear model <br> `summaryLM(reg)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `summaryLM(reg)`
+
 summaryLM <- function(reg){
   out = {}
   out$Slope <- coef(reg)[2]
@@ -378,15 +354,15 @@ summaryLM <- function(reg){
   out$AdjRSquared <- summary(reg)$adj.r.squared
   return(out)
 }
+
 # Count occurance of a character in a string -----------------------------
-#' # Count occurance of a character in a string <br> `char.count (string = "string", Char = "i")`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `char.count (string = "string", Char = "i")`
 char.count <- function(string, Char ="."){
   return(length(unlist(strsplit(string, Char, fixed = TRUE))) - 1)
 }
+
 # Add Path to filename ----------------------------------------------------
-#' # Add path to filename <br> `getwd()`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `getwd()`
 "%/%" = function(Path.Folder.Data,File.Name){
   # Cheking whether / was already added to path
   if (substr(Path.Folder.Data,nchar(Path.Folder.Data),nchar(Path.Folder.Data)) == "/") {
@@ -396,14 +372,13 @@ char.count <- function(string, Char ="."){
   }
   return(File.Name)
 }
+
 # Not in the list ----------------------------------------------------
-#' # Not in the list <br> `getwd()`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `getwd()`
 "%!in%" = function(x,y)!('%in%'(x,y))
 
 # Save data as csv file (no need to worry about path and extension) ------------
-#' # Save data as csv file (no need to worry about path and extension) <br> `save.csv(data, file.name, path = getwd(), subfolder = "Output-R-Tables" )`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `save.csv(data, file.name, path = getwd(), subfolder = "Output-R-Tables" )`
 save.csv <- function(data,file.name,path=getwd(), row.Names = FALSE,
                      subfolder="Output-Tables"){
   # In case my path has forward slash
@@ -441,15 +416,11 @@ save.csv <- function(data,file.name,path=getwd(), row.Names = FALSE,
 }
 
 # Saving session info to a txt file --------------------------------------------
-#' # Saving session info to a txt file <br> `runInfo()`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `runInfo()`
 runInfo <- function(time=FALSE){
-
   closeAllConnections()
-
   fileName <- file(basename(getwd()) %+% "-Session Info.txt")
   sink(fileName)
-
 
   if (time == TRUE) {
     msg <- "Ran by " %+% getUser() %+% " on " %+%
@@ -458,30 +429,29 @@ runInfo <- function(time=FALSE){
     msg <- "Ran by " %+% getUser() %+% " on " %+%
       as.character(Sys.Date()) %+% "\n"
   }
-
   catn(msg)
   catn(capture.output(sessionInfo(),split = TRUE))
-
   sink()
   closeAllConnections()
 }
+
 # Get User Name -----------------------------------------------------------
-#' # Get User Name <br> `getUser()`
-#' <a href="#top"> Go back to the Table of Contents </a>
-getUser <- function()
-{
+# `getUser()`
+getUser <- function(){
   env <- if (.Platform$OS.type == "windows") "USERNAME" else "USER"
   unname(Sys.getenv(env))
 }
+
 # Header to append to any new R file -------------------------------------------
-#' # Header to append to any new R file <br> `header()`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `header()`
 header <- function() {
   file.show("C:/Users/Ankur/hubiC/Work/Projects/Utilities/util_Global/R-Header.txt")
 }
+
 # Publication Theme for ggplot2 -------------------------------------------
-#' # Publication Theme for ggplot2 <br> `theme_publication(base_size=14, base_family="")` <br> `scale_fill_Publication()` <br> `scale_colour_Publication`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `theme_publication(base_size=14, base_family="")`
+# `scale_fill_Publication()`
+# `scale_colour_Publication`
 install(c("ggthemes","grid"))
 theme_Publication <- function(base_size=14, base_family="") {
   library(grid)
@@ -512,7 +482,6 @@ theme_Publication <- function(base_size=14, base_family="") {
             strip.background = element_rect(colour = "#f0f0f0",fill = "#f0f0f0"),
             strip.text = element_text(face = "bold")
       ))
-
 }
 # scale_fill_Publication()
 scale_fill_Publication <- function(...){
@@ -526,9 +495,9 @@ scale_colour_Publication <- function(...){
   discrete_scale("colour","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
 
 }
+
 # Reset Everything (Like a new R session) --------------------------------------
-#' # Reset Everything (Like a new R session) <br> `reset()`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `reset()`
 reset <- function(){
   clr()
   clc()
@@ -537,14 +506,12 @@ reset <- function(){
 }
 
 # Concenate object as Text -------------------------------------------
-#' # Concenate object as Text <br> `"a" %+% "b"`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `"a" %+% "b"`
 "%+%" = function(obj_1, obj_2) {
   paste(obj_1, obj_2, sep = "")
 }
 # cat() that appends a newline ---------------------------------------
-#' # cat() that appends a newline <br> `catn(..., file = "", sep = " ", fill = FALSE, labels = NULL, append = FALSE)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `catn(..., file = "", sep = " ", fill = FALSE, labels = NULL, append = FALSE)`
 catn = function(..., file = "", sep = " ", fill = FALSE, labels = NULL,
                 append = FALSE) {
   cat(..., "\n", file = file, sep = sep, fill = fill, labels = labels,
@@ -552,11 +519,8 @@ catn = function(..., file = "", sep = " ", fill = FALSE, labels = NULL,
 }
 
 # List objects available in the environment-------------------------------------
-#' # List objects available in the environment <br> `list.objects(env = .GlobalEnv)`
-#' <a href="#top"> Go back to the Table of Contents </a>
-list.objects <- function(env = .GlobalEnv)
-{
-
+# `list.objects(env = .GlobalEnv)`
+list.objects <- function(env = .GlobalEnv){
   if (!is.environment(env)) {
     env <- deparse(substitute(env))
     stop(sprintf('"%s" must be an environment', env))
@@ -571,8 +535,8 @@ list.objects <- function(env = .GlobalEnv)
 }
 
 # Check whether all the elements are same or identical -------------------------
-#' # Check whether all the elements are same or identical <br> `all.same(vector)` <br> `all.identical(x, warn = FALSE)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `all.same(vector)`
+# `all.identical(x, warn = FALSE)`
 all.same <- function(vector){
   # Give a vector of values and it will tell whether all the values are same or not
   # Returns boolean results in terms of True or False
@@ -599,41 +563,35 @@ all.identical <- function(x, warn = FALSE) {
     if (all(TF)) TRUE else FALSE
   }
 }
+
 # Stich (Collapse a vector of strings) ------------------------------------
-#' # Stich (Collapse a vector of strings) <br> `stich(vec, collapse = " ")`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `stich(vec, collapse = " ")`
 stich <- function(vec, collapse = " "){
   paste0(as.character(vec), collapse = collapse)
 }
 
 # Remove na from a vector -------------------------------------------------
-#' # Remove na from a vector <br> `rm.na(vec)`
-#' <a href="#top"> Go back to the Table of Contents </a>
+# `rm.na(vec)`
 rm.na <- function(vec){
   return(vec[!is.na(vec)])
 }
+
 # Merging two dataframe like mean +- sd -----------------------------------
-#' # Merging two dataframe like mean +- sd <br> `fuse(df.prfx, df.sufx, merged.Cols , link = "±")`
-#' <a href="#top"> Go back to the Table of Contents </a>
-# fuse(df.prfx, df.sufx, merged.Cols , link = "±")
+# `fuse(df.prfx, df.sufx, merged.Cols , link = "±")`
 fuse <- function(df.prfx, df.sufx, merged.Cols , link = "±"){
   # Checking no. of cols are identical
   if (dim(df.prfx)[2] != dim(df.sufx)[2]) {
     stop("Number of columns are not matching, please recheck")
   }
-
   if (dim(df.prfx)[1] != dim(df.sufx)[1]) {
     print.warn("Please note that number of rows are not matching!")
   }
-
   if (!identical(sort(names(df.prfx)),sort(names(df.sufx)))) {
     stop("Columns names are not matching, please fix")
   }
-
   # Merging matrix
   merged <- merge(df.prfx, df.sufx, by = merged.Cols, all = TRUE,
                   suffixes = c(".prfx",".sufx"))
-
   out <-  as.data.frame(matrix(NA, nrow = dim(merged)[1], ncol = dim(df.prfx)[2] ))
   names(out) <- names(df.prfx)
   out[, merged.Cols] <- merged[ , merged.Cols]
@@ -670,18 +628,17 @@ fuse <- function(df.prfx, df.sufx, merged.Cols , link = "±"){
   }
   return(out)
 }
+
 # Moving Average & Standard Deviations ------------------------------------
-#' # Moving Average <br> `mov.avg(x, width, align = "center", partial = FALSE, na.rm = FALSE )`
-#' <a href="#top"> Go back to the Table of Contents </a>
-# mov.avg(x, width, align = "center", partial = FALSE, na.rm = FALSE )
+# `mov.avg(x, width, align = "center", partial = FALSE, na.rm = FALSE )`
 mov.avg <- function(x, width, align = "center", partial = FALSE, na.rm = FALSE ) {
   # Installing zoo
   install("zoo")
   out <- rollapply(data = x, width = width, FUN = mean, na.rm = na.rm, align = align, fill = NA, partial = partial)
   return(out)
 }
-#' # Moving Standard Deviations <br> `mov.sd(x, width, align = "center", partial = FALSE, na.rm = FALSE )`
-#' <a href="#top"> Go back to the Table of Contents </a>
+
+# `mov.sd(x, width, align = "center", partial = FALSE, na.rm = FALSE )`
 mov.sd <- function(x, width, align = "center", partial = FALSE) {
   install("zoo")
   out <- rollapply(data = x, width = width, FUN = sd, na.rm = na.rm, align = align, fill = NA, partial = partial)
@@ -689,8 +646,8 @@ mov.sd <- function(x, width, align = "center", partial = FALSE) {
 }
 
 # HTML Function -----------------------------------------------------------
-#' # Various HTML Functions
-#' ## `hr(0)`
+# Various HTML Functions
+# `hr(0)`
 install("rstudioapi")
 install("devtools")
 if ("roxygen2Comment" %in% rownames(installed.packages())) {
@@ -707,7 +664,7 @@ hr <- function(x = 0){
     cat("<hr />")
   }
 }
-#' ## `gototop()`
+# `gototop()`
 gototop <- function(x = 1){
   if (x == 0) {
     cat("<a href='#top'> Go back to the Table of Contents </a> ")
@@ -717,7 +674,7 @@ gototop <- function(x = 1){
 
 }
 # export to html
-#' export2html(".R")
+# 'export2html(".R")'
 export2html <- function(filename, folder = 'Output-html', suppress_warnings = TRUE, browse = TRUE, output_file = NULL) {
   if (suppress_warnings) {
     suppressWarnings(rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE,
@@ -741,7 +698,6 @@ export2html <- function(filename, folder = 'Output-html', suppress_warnings = TR
 }
 
 # Insert Code/Text as Text in Script File Automatically -------------------
-#' Insert Code/Text as Text in Script File Automatically
 install("rstudioapi")
 i <- function(insert = c("hr","chunk","gototop","section","date")) {
   insert <- match.arg(insert)
@@ -752,13 +708,13 @@ i <- function(insert = c("hr","chunk","gototop","section","date")) {
   } else if (insert == "gototop") {
     rstudioapi::insertText(text = "gototop() \n")
   } else if (insert == "section") {
-    rstudioapi::insertText(text = paste0("#+ echo = FALSE \n", "# 01 ------ \n", "#' ##   \n \n", "#+ results= 'asis', echo = FALSE \n", "hr() \n"))
+    rstudioapi::insertText(text = paste0("#+ echo = FALSE \n", "# 01 ------ \n", "###   \n \n", "#+ results= 'asis', echo = FALSE \n", "hr() \n"))
   } else if (insert == "date") {
     rstudioapi::insertText(text = format(Sys.time(), format = "%Y-%b-%d %H:%M:%S " %+% weekdays(as.Date(Sys.Date(),'%d-%m-%Y'))))
   }
 }
 # Open Current Directory directly from R ---------------------------------------
-#' # Open Current Directory directly from R <br> openwd()
+# 'openwd()'
 openwd <- function(dir = getwd()){
   if (.Platform['OS.type'] == "windows") {
     shell.exec(dir)
@@ -766,9 +722,8 @@ openwd <- function(dir = getwd()){
     system(paste(Sys.getenv("R_BROWSER"), dir))}
 }
 
-
 # List objects by their size ----------------------------------------------
-#' List objects by their size <br> `lsos()`
+# `lsos()`
 .ls.objects <- function(pos = 1, pattern, order.by,
                         decreasing = FALSE, head = FALSE, n = 5) {
   napply <- function(names, fn) sapply(names, function(x)
@@ -797,14 +752,11 @@ lsos <- function(..., n=10) {
   .ls.objects(..., order.by = "Size", decreasing = TRUE, head = TRUE, n = n)
 }
 
-
-#+ echo = FALSE
 # function to see logs/ diary of work and project progress ------
-#' # function to see logs/ diary of work and project progress
 diary <- function(){
-  #' Installing necessary plugins
+  #Installing necessary plugins
   install(c("dplyr","DT","readxl","htmlwidgets"))
-  #' Name and path for the file
+  #Name and path for the file
   dir <- "c:/Users/Ankur/hubiC/Work/Projects/"
   name <- "Diary&Tasks[Ankur]"
   table <- read_excel(dir %/% name %+% ".xlsm",sheet = "Work_Diary")
@@ -816,7 +768,7 @@ diary <- function(){
   table$`Context File` <- as.factor(table$`Context Files`)
   table$`Task Type` <- as.factor(table$`Task_Type`)
 
-  #'   Creating html table
+  #  Creating html table
   widget <- datatable(table, class = 'display', filter = list(position = 'top', clear = TRUE, plain = FALSE),
                       extensions = 'FixedHeader', escape = TRUE,
                       options = list(initComplete = JS("function(settings, json) {",
@@ -828,35 +780,26 @@ diary <- function(){
                                                             className = 'compact')))) %>%
     formatStyle('Project',target = "row", backgroundColor = styleEqual(c("Growth"), c('yellow'))
     )
-  #'   Saving html table in the same folder as html file
+  #  Saving html table in the same folder as html file
   DT::saveWidget(widget, dir %/% name %+% '.html',selfcontained = TRUE)
 
-  #'   opening the file
+  #  opening the file
   browseURL(dir %/% name %+% '.html')
   #https://datatables.net/manual/styling/classes
 }
 
-
-#+ echo = FALSE
 # blank as NA ------
-#' ## blank as NA
-#' Usage: data %>% mutate_each(funs(blank2NA))
+#Usage: data %>% mutate_each(funs(blank2NA))
 blank2NA <- function(x){
   install("dplyr")
-  if ("factor" %in% class(x)) x <- as.character(x) ## since ifelse wont work with factors
+  if ("factor" %in% class(x)) x <- as.character(x) # since ifelse wont work with factors
   ifelse(as.character(x) != "", x, NA)
 }
 
-#+ results= 'asis', echo = FALSE
-hr()
-
 # as.attrib.same ----------------------------------------------------------
-#' ## as.attrib.same
-#' Usage: is.attrib.same(df = ha_11, by_col = "tag", attrib_cols = c("plot_id","year","qdt","s.qdt","gx","gy","spp","date4"))
-#+ results= 'asis', echo = FALSE
-hr()
+# 'Usage: 'is.attrib.same(df = ha_11, by_col = "tag", attrib_cols = c("plot_id","year","qdt","s.qdt","gx","gy","spp","date4"))'
+
 # print.warn ------
-#' ## print.warn
 print.warn = function(msg) {
   # Taken from sandeep's util.r file
   # Signals a test failure.
@@ -864,36 +807,28 @@ print.warn = function(msg) {
   catn(msg)
   warning(msg, call. = F)
 }
-#+ results= 'asis', echo = FALSE
-hr()
-#+ echo = FALSE
+
 # fix.levels------
-#' ## fix.levels
 fix.levels = function(x, level_map) {
-  #' Taken from sandeep's util.r file
-  #' "Re-levels" factors in 'x' to correspond to the levels in 'level_map'.
-  #' x - Vector of factors, possibly with fewer levels than 'level_map.'
-  #' level_map - Vector of named unique levels.
-  #' return - Releveled 'x.'
+  # Taken from sandeep's util.r file
+  # "Re-levels" factors in 'x' to correspond to the levels in 'level_map'.
+  # x - Vector of factors, possibly with fewer levels than 'level_map.'
+  # level_map - Vector of named unique levels.
+  # return - Releveled 'x.'
   return(factor(level_map[levels(x)[x]], level_map, names(level_map)))
 }
-#+ results= 'asis', echo = FALSE
-hr()
-#+ echo = FALSE
-## rename.col.variable.to ------
-#' ## Renaming variable while melting the data
+
+# rename.col.variable.to ------
+# Renaming variable while melting the data
 rename.col.variable.to <- function(df,
                                    old.var.name = "variable",
                                    new.var.name = "variable") {
   names(df)[names(df) == old.var.name] <- new.var.name
   return(df)
 }
-#+ results= 'asis', echo = FALSE
-hr()
-#+ echo = FALSE
-#+ echo = FALSE
-## sum.adv ------
-#' ## Modified sum function to handle values like all NA
+
+# sum.adv ------
+# Modified sum function to handle values like all NA
 sum.adv <- function(x){
   if (sum(!is.na(x)) == 0) {
     out <- NA
@@ -902,12 +837,9 @@ sum.adv <- function(x){
   }
   return(out)
 }
-#+ results= 'asis', echo = FALSE
-sink("NULL")
-xxxx <- hr()
-sink(xxxx); rm(xxxx)
+
 # max.adv ------
-#' ## Modified max function to handle values like all NA
+# Modified max function to handle values like all NA
 max.adv <- function(x){
   if (sum(!is.na(x)) == 0) {
     out <- NA
@@ -916,12 +848,9 @@ max.adv <- function(x){
   }
   return(out)
 }
-#+ results= 'asis', echo = FALSE
-sink("NULL")
-xxxx <- hr()
-sink(xxxx); rm(xxxx)
+
 # max.adv ------
-#' ## Modified min function to handle values like all NA
+# Modified min function to handle values like all NA
 min.adv <- function(x){
   if (sum(!is.na(x)) == 0) {
     out <- NA
@@ -930,13 +859,10 @@ min.adv <- function(x){
   }
   return(out)
 }
-#+ results= 'asis', echo = FALSE
-sink("NULL")
-xxxx <- hr()
-sink(xxxx); rm(xxxx)
+
 # stat.summary------
-#' ## stat.summary
-#' given a data frame, a table of list of variables and its filter, and list of grouping variables it provides a mean, standard deviation and other relavant summaries.
+# stat.summary
+# given a data frame, a table of list of variables and its filter, and list of grouping variables it provides a mean, standard deviation and other relavant summaries.
 stat.summary <- function(colTable, group_var, df_in){
   df_out <- list()
   for (f in (1:dim(colTable)[1])) {
@@ -978,27 +904,17 @@ stat.summary <- function(colTable, group_var, df_in){
   }
   return(df_out %>% reduce(left_join, by = group_var) %>% as.data.frame())
 }
-#+ results= 'asis', echo = FALSE
-sink("NULL")
-xxxx <- hr()
-sink(xxxx); rm(xxxx)
-#+ echo = FALSE
+
 # pad.00------
-#' ## pad.00
-#' Pads a number or string with zeros
+# Pads a number or string with zeros
 pad.00 <- function(string, width = 2, side = "left"){
   install("stringr")
   str_pad(string = string, width = width, side = side, pad = "0")
 }
-#+ results= 'asis', echo = FALSE
-sink("NULL")
-xxxx <- hr()
-sink(xxxx); rm(xxxx)
 
 # is.attrib.same ---------------
-#' Crosscheck whether two data sets are same in some columns
-#' Checks the internal consistency of the data by a particular column
-
+# Crosscheck whether two data sets are same in some columns
+# Checks the internal consistency of the data by a particular column
 is.attrib.same <- function(df, by_col, attrib_cols){
   # Check that by_col and attrib_cols are mutually exclusive
   if (length(intersect(by_col,attrib_cols)) != 0) {
@@ -1014,6 +930,7 @@ is.attrib.same <- function(df, by_col, attrib_cols){
     return(df_check)
   }
 }
+
 # r2html -------------------------------------------------------------------------------------------------
 # Funtion which converts normal R code into a rmarkdown code. There already exists some implementation, for example see <https://rmarkdown.rstudio.com/articles_report_from_r_script.html> for more details.
 # This function however does an additional things.
@@ -1140,7 +1057,6 @@ sketch.pptx <- function(figObj, figname){
 
 # sketch ------------------------------------------------------------------------------------------------
 # Function to save a singleton plot as pdf as well as ppt
-
 sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = FALSE, export = TRUE){
   subfolder = "Output-Graphics"
   path = getwd()
@@ -1166,7 +1082,7 @@ interpolate <- function(x, y, df, y_per, graph = FALSE){
     group_by(x) %>%
     summarise(y = mean(y, na.rm = TRUE)) %>%
     arrange(x)
-    if (dim(temp)[1] < 4) {
+  if (dim(temp)[1] < 4) {
     return(list(NA,NA))
   } else {
     x = temp$x
@@ -1184,5 +1100,3 @@ interpolate <- function(x, y, df, y_per, graph = FALSE){
     return(list(reg, xval))
   }
 }
-
-
