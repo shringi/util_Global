@@ -220,6 +220,7 @@ export <- function(fname){
                out.type = "pdf")
   dev.off()
 }
+
 # Opne and closing of pdf device ------------------------------------------
 # `openPdf(pdfname = "test")`
 # `closePdf(pdfname = "test")`
@@ -231,7 +232,7 @@ openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "Outpu
     dir.create(file.path(path, subfolder))
   }
   pdfname <- subfolder %/% pdfname
-  {pdf(paste0(pdfname, ".pdf"), width = width, height = height, paper = "a4r",
+  {pdf(paste0(pdfname, " [R].pdf"), width = width, height = height, paper = "a4r",
        onefile = T, bg = "white");
     dev.control("enable")}
 }
@@ -240,7 +241,7 @@ closePdf <- function(pdfname = "test", subfolder = "Output-Graphics"){
   # Closing Images
   dev.off()
   # opening pdf file
-  system(paste0("open ", shQuote(subfolder %/% pdfname), ".pdf"))
+  system(paste0("open ", shQuote(subfolder %/% pdfname %+% " [R].pdf")))
 }
 # Clear data or screen -------------------------------------------
 # `clr()`
@@ -303,8 +304,11 @@ convertClass <- function(obj, types, date.origin = "1970-01-01"){
   }
   origin <- date.origin
   as.date <- function(x){
-    as.Date(as.numeric.adv(x), origin = origin)
-  }
+    if (class(x) == "factor") {
+      as.Date(x, origin = origin)
+    }else{
+      as.Date(as.numeric.adv(x), origin = origin)
+    }}
   out <- lapply(1:length(obj),
                 FUN = function(i){FUN1 <- switch(tolower(types[i]),
                                                  character = as.character,
@@ -1036,25 +1040,37 @@ summary.non.num = function(data){
 
 # sketch.pptx -------------------------------------------------------------------------------------------
 # Function to export the plot as editable powerpoint file
-sketch.pptx <- function(figObj, figname){
-  install(c("officer","rvg"))
+sketch.pptx <- function(figObj, prefix, figname, figObjName, figList = ""){
+  install(c("officer"))
   subfolder = "Output-Graphics"
-  path = subfolder %/% figname %+% "[R]" %+% ".pptx"
+  path = subfolder %/% prefix %+% "-" %+% figname %+% " [R]" %+% ".pptx"
   if (!file.exists(path)) {
     out <- read_pptx()
   } else {
     out <- read_pptx(path)
   }
+  footer_text <- prefix %+% "-<...>.R: Figure: " %+% figList %+% "$" %+% figObjName
   out %>%
     add_slide(layout = "Title and Content", master = "Office Theme") %>%
-    ph_with_vg(code = print(figObj), type = "body") %>%
+    ph_with(value = figObj, location = ph_location_type(type = "body"),
+            bg = "transparent" ) %>%
     ph_with(value = ".", location = ph_location_type(type = "title")) %>%
     ph_with(value = paste0(format(Sys.time(), format = "%Y-%b-%d %H:%M:%S "), weekdays(as.Date(Sys.Date(), '%d-%m-%Y'))), location = ph_location_type(type = "dt")) %>%
-    ph_with(value = figname, location = ph_location_type(type = "ftr")) %>%
-    ph_hyperlink(ph_label = slide_summary(.) %>% dplyr::filter(type == "ftr") %>% dplyr::select(ph_label), type = "ftr", href = figname %+% "[R]" %+% ".pdf") %>%
+    ph_with(value = footer_text, location = ph_location_type(type = "ftr")) %>%
+    ph_hyperlink(ph_label = slide_summary(.) %>% dplyr::filter(type == "ftr") %>% dplyr::select(ph_label), type = "ftr", href = figname %+% " [R]" %+% ".pdf") %>%
     print(target = path)
 }
 
+# print.figure ----------------------------------------------------------
+# Printing a singleton figure by an object
+print.figure <- function(figobj, prefix, figname, figObjName, figList = "", pdf = TRUE, pptx = FALSE){
+  if (pdf) {
+    print(figobj)
+  }
+  if (pptx) {
+    sketch.pptx(figObj = figobj, prefix = prefix, figname = figname, figObjName = figObjName, figList = figList)
+  }
+}
 # sketch ------------------------------------------------------------------------------------------------
 # Function to save a singleton plot as pdf as well as ppt
 sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = FALSE, export = TRUE){
@@ -1066,7 +1082,7 @@ sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = FALSE, 
   figname <- prefix %+% "-" %+% figname
   print(figObj)
   if (export == TRUE) {
-    ggsave(plot = figObj, path = subfolder, figname %+% "[R].pdf", width = 183, units = "mm")
+    ggsave(plot = figObj, path = subfolder, figname %+% "[R].pdf", height = 210, width = 297, units = "mm")
     system(paste0("open ", shQuote(subfolder %/% figname), "[R].pdf"))
     if (ppt == TRUE) {
       sketch.pptx(figObj = figObj, figname = figname)
@@ -1074,6 +1090,21 @@ sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = FALSE, 
   }
 }
 
+
+# export.list.of.figures --------------------------------------------------
+# Saves a list of figures into a joint pdf or pptx file.
+export.list.of.figures <- function(figList, prefix = "99zz-99z-99", figname, pdf = TRUE, pptx = FALSE, ...){
+  prefix.figname = prefix %+% "-" %+% figname
+  if(pdf){
+    openPdf(pdfname = prefix.figname, ...)
+  }
+  figListName = substitute(figList)
+  walk2(figList, names(figList),
+       ~print.figure(figobj = .x, prefix = prefix, figname = figname, figObjName = .y, figList = figListName, pptx = pptx))
+  if(pdf){
+    closePdf(pdfname = prefix.figname, ...)
+  }
+}
 # interpolate -------------------------------------------------------------------------------------------
 # Function to interpolate the values by fitting a smooth spline
 interpolate <- function(x, y, df, y_per, graph = FALSE){
