@@ -1099,8 +1099,7 @@ export.list.of.figures <- function(figList, prefix = "99zz-99z-99", figname, pdf
     openPdf(pdfname = prefix.figname, ...)
   }
   figListName = substitute(figList)
-  walk2(figList, names(figList),
-       ~print.figure(figobj = .x, prefix = prefix, figname = figname, figObjName = .y, figList = figListName, pptx = pptx))
+  walk2(figList, names(figList), ~print.figure(figobj = .x, prefix = prefix, figname = figname, figObjName = .y, figList = figListName, pptx = pptx))
   if(pdf){
     closePdf(pdfname = prefix.figname, ...)
   }
