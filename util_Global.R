@@ -867,25 +867,61 @@ min.adv <- function(x){
 # stat.summary------
 # stat.summary
 # given a data frame, a table of list of variables and its filter, and list of grouping variables it provides a mean, standard deviation and other relavant summaries.
-stat.summary <- function(colTable, group_var, df_in){
-  df_out <- list()
+# Example usage
+# data("iris")
+# table <- data.frame(var = names(iris)[-dim(iris)[2]], filter = NA)
+# stat.summary(colTable = table, group_var = "Species",df_in = iris)
+# out_w <- stat.summary(colTable = table, group_var = "Species", df_in = iris, format = "wide")
+# out_l <- stat.summary(colTable = names(iris)[1:4], group_var = "Species", df_in = iris, format = "long")
+# out_list <- stat.summary(colTable = table, group_var = "Species", df_in = iris, format = "list")
+#
+stat.summary <- function(colTable, group_var, df_in, format = "wide"){
+  list_df <- list()
+  class = class(colTable)
+  summary.vars <- c("mean", "sd", "cv", "max", "min", "n", "se")
+  n.sum.vars <- length(summary.vars)
+  n.gr.vars <- length(group_var)
+  if ("data.frame" %!in% class) {
+    if (class == "character") {
+      colTable = data.frame(var = colTable, filter = NA)
+    } else {
+      stop("Check the class of the colTable variable! \n
+      It should be eithe character vector of variables names \n
+      or \n
+      a data.frame of variable names and associated filter columns.")
+    }
+  }
+
   for (f in (1:dim(colTable)[1])) {
-    var <-  colTable[f, 1]
+    var.name <-  colTable[f, 1]
     filter.var <- colTable[f, 2]
+    filter.var.name <- filter.var
 
     if (is.na(filter.var) ==  TRUE) {
       filter.var = TRUE
     }
 
-    var.mean <- var %+% ".mean"
-    var.sd <- var %+% ".sd"
-    var.cv <- var %+% ".cv"
-    var.max <- var %+% ".max"
-    var.min <- var %+% ".min"
-    var.n <- var %+% ".n"
-    var.se <- var %+% ".se"
+    if (format == "wide") {
+      var.mean  <- var.name %+% ".mean"
+      var.sd    <- var.name %+% ".sd"
+      var.cv    <- var.name %+% ".cv"
+      var.max   <- var.name %+% ".max"
+      var.min   <- var.name %+% ".min"
+      var.n     <- var.name %+% ".n"
+      var.se    <- var.name %+% ".se"
+    } else if (format %in% c("long", "list")) {
+      var.mean  <- "mean"
+      var.sd    <- "sd"
+      var.cv    <- "cv"
+      var.max   <- "max"
+      var.min   <- "min"
+      var.n     <- "n"
+      var.se    <- "se"
+    } else {
+      print(format)
+      stop("Please check the format! Default is `wide`, other is `long` ")
+    }
 
-    rm(var)
     var <- colTable[f, 1] %+% "[" %+% filter.var %+% " == TRUE]"
 
     formula.mean <- "mean(" %+% var %+% ", na.rm = TRUE)"
@@ -896,17 +932,35 @@ stat.summary <- function(colTable, group_var, df_in){
     formula.n <- "sum.adv(!is.na(" %+% var %+% "))"
     formula.se <- var.sd %+% "/sqrt(" %+% var.n %+% ")"
 
-    df_out[[f]] <- df_in %>% group_by_at(vars(group_var)) %>%
+    list_df[[var.name]] <- df_in %>% group_by_at(vars(group_var)) %>%
       summarise(!!var.mean := eval(parse(text = formula.mean)),
                 !!var.sd := eval(parse(text = formula.sd)),
                 !!var.cv := eval(parse(text = formula.cv)),
                 !!var.min := eval(parse(text = formula.min)),
                 !!var.max := eval(parse(text = formula.max)),
                 !!var.n := eval(parse(text = formula.n)),
-                !!var.se := eval(parse(text = formula.se))
-      )
+                !!var.se := eval(parse(text = formula.se))) %>%
+      mutate(var = var.name,
+             filter.var = filter.var.name)
   }
-  return(df_out %>% reduce(left_join, by = group_var) %>% as.data.frame())
+  if (format == "wide") {
+    out <- list_df %>%
+      reduce(left_join, by = group_var) %>%
+      as.data.frame() %>%
+      select(-starts_with("var"),-starts_with("filter.var"))
+  } else if (format == "long") {
+    out <- list_df %>%
+      reduce(bind_rows) %>%
+      as.data.frame() %>%
+      select(1:length(n.gr.vars),
+             n.sum.vars + n.gr.vars + 1, n.sum.vars + n.gr.vars + 2,
+             (n.gr.vars + 1):(n.gr.vars + n.sum.vars))
+  } else if (format == "list") {
+    out = list_df
+  } else {
+    stop("Please check the format! Default is `wide`, other is `long` ")
+  }
+  return(out)
 }
 
 # pad.00------
