@@ -224,7 +224,7 @@ export <- function(fname){
 # `openPdf(pdfname = "test")`
 # `closePdf(pdfname = "test")`
 
-openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "Output-Graphics", path = getwd()) {
+openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "04-Graphics", path = getwd()) {
   closeFigs()
   # Opening "test.pdf"
   if (!file.exists(subfolder)) {
@@ -237,7 +237,7 @@ openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "Outpu
     dev.control("enable")}
 }
 # closePdf(pdfname = "test")
-closePdf <- function(pdfname = "test", subfolder = "Output-Graphics"){
+closePdf <- function(pdfname = "test", subfolder = "04-Graphics"){
   # Closing Images
   dev.off()
   # opening pdf file
@@ -385,9 +385,9 @@ char.count <- function(string, Char ="."){
 "%!in%" = function(x,y)!('%in%'(x,y))
 
 # Save data as csv file (no need to worry about path and extension) ------------
-# `save.csv(data, file.name, path = getwd(), subfolder = "Output-R-Tables" )`
+# `save.csv(data, file.name, path = getwd(), subfolder = "Output-Tables" )`
 save.csv <- function(data,file.name,path=getwd(), row.Names = FALSE,
-                     subfolder="Output-Tables"){
+                     subfolder="03-Tables"){
   # In case my path has forward slash
   if (substr(path,nchar(path),nchar(path)) != "/") {
     path <- paste0(path,"/")
@@ -927,7 +927,7 @@ is.attrib.same <- function(df, by_col, attrib_cols){
 # export2html -------------------------------------------------------------------------------------------
 # export to html
 # 'export2html(".R")'
-export2html <- function(filename, folder = 'Output-html', suppress_warnings = TRUE, browse = TRUE, output_file = NULL) {
+export2html <- function(filename, folder = '05-Html', suppress_warnings = TRUE, browse = TRUE, output_file = NULL) {
   if (suppress_warnings) {
     suppressWarnings(rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE,
                                        output_file = output_file))
@@ -1005,7 +1005,7 @@ r2html <- function(){
   filename = basename(file)
   fn = substr(filename, start = 1, nchar(filename) - 2)
   writeLines(flIn, con = "temp_rmd.R")
-  export2html("temp_rmd.R", folder = 'Output-html', suppress_warnings = TRUE, browse = TRUE, output_file = fn)
+  export2html("temp_rmd.R", folder = '05-Html', suppress_warnings = TRUE, browse = TRUE, output_file = fn)
   if (file.exists("temp_rmd.R"))
     #Delete file if it exists
     file.remove("temp_rmd.R")
@@ -1057,7 +1057,7 @@ summary.non.num = function(data){
 # Function to export the plot as editable powerpoint file
 sketch.pptx <- function(figObj, prefix, figname, figObjName, figList = ""){
   install(c("officer"))
-  subfolder = "Output-Graphics"
+  subfolder = "04-Graphics"
   path = subfolder %/% prefix %+% "-" %+% figname %+% " [R]" %+% ".pptx"
   if (!file.exists(path)) {
     out <- read_pptx()
@@ -1089,7 +1089,7 @@ print.figure <- function(figobj, prefix, figname, figObjName, figList = "", pdf 
 # sketch ------------------------------------------------------------------------------------------------
 # Function to save a singleton plot as pdf as well as ppt
 sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = FALSE, export = TRUE){
-  subfolder = "Output-Graphics"
+  subfolder = "04-Graphics"
   path = getwd()
   if (!file.exists(subfolder)) {
     dir.create(file.path(path, subfolder))
@@ -1145,4 +1145,16 @@ interpolate <- function(x, y, df, y_per, graph = FALSE){
     return(list(reg, xval))
   }
 }
+
+# create.dir.str ----------------------------------------------------------------------------------------
+create.dir.str <- function() {
+  dirs <- c("01-Data", "01-Data/01-Raw","01-Data/02-Processed", "02-Code", "03-Tables", "04-Graphics", "05-Html")
+  for (dir in dirs) {
+    if (!file.exists(dir)) {
+      dir.create(file.path(getwd(), dir))
+      print("Created directory: " %+% dir)
+    }
+  }
+}
+
 
