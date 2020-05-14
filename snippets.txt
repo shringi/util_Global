@@ -1,4 +1,5 @@
-	# Author: Ankur Shringi (ankurshringi@iisc.ac.in)
+snippet header
+	# Author: Your Name (email)
 	# title: `r rev(strsplit(rstudioapi::getSourceEditorContext()$path, split = "/")[[1]])[1]`
 	# subtitle: ...
 	# abstract: ...
@@ -8,9 +9,21 @@
 	# `r2html()`
 	# Initialization ----------------------------------------------------------
 	# Loading custom made utility functions
-	source("C:/Users/Ankur/hubiC/Work/Projects/Utilities/util_Global/util_Global.R")
+	source("util_Global.h.R")
 	# Deleting R-Environment Variables (Except utility functions)
 	clr()
 	# Loading required packages
-	Packages <-     c("tidyverse", "roxygen2Comment")
+	Packages <-     c("tidyverse")
 	install(Packages); rm(Packages)
+	
+snippet date
+	`r format(Sys.time(), format = "%Y-%b-%d %H:%M:%S " %+% weekdays(as.Date(Sys.Date(),'%d-%m-%Y')))`
+	
+snippet file
+	`r rev(strsplit(rstudioapi::getSourceEditorContext()$path, split = "/")[[1]])[1]`
+	
+snippet project
+	`r rev(strsplit(rstudioapi::getActiveProject(), split = "/")[[1]])[1]`
+	
+snippet fig
+	`r substr(basename(rstudioapi::getSourceEditorContext()$path), start = 1,4)`
