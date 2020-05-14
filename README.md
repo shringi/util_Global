@@ -32,9 +32,9 @@ This is the main scripts which hosts all the custom functions. A list of functio
 
 All the functions, which I no longer use, or found a way around are shifted here.
 
-## Snippets
+## Snippets.txt
 
-Its a folder containing plain snippets. Which you can add in your RStudio settings for easy use.
+A file containing plain snippets. Copy these snippets, modify and add in your RStudio settings (Tools > Global Options > Code > Editing > Snippets > Edit Snippets button) for handy use. You can find more information about RStudio Snippets from [here](https://support.rstudio.com/hc/en-us/articles/204463668-Code-Snippets).
 
 # Getting started
 
