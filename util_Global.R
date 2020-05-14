@@ -27,15 +27,14 @@ install <- function(package1, ...)
     if (loaded[p])
     {
       #print(paste(p, "is already loaded!"))
-    }else{
+    } else {
       print(paste(p, "not loaded."))
 
-      if (installed[p])
-      {
+      if (installed[p]) {
         print(paste(p, "is already installed!"))
         suppressPackageStartupMessages(do.call("library", list(p)))
         print(paste(p, "has been loaded now."))
-      }else{
+      } else {
         print(paste(p, "is not installed!"))
         print(paste(p, "is being installed."))
         install.packages(p, dependencies = TRUE)
@@ -139,7 +138,7 @@ eq.reg <- function(reg){
                     .(b1)*italic(bold(X))["("*p == .(Pvalue.slp)*")"] * "," ~~
                     r^2 == .(r2) * "," ~~
                     adj_r^2 == .(ar2) * "," ~~ RMSE == .(rmse))
-  }else if (dim(coefs)[1] == 3) {
+  } else if (dim(coefs)[1] == 3) {
     c0 <- round(coefs[1,1],2)
     c1 <- round(coefs[2,1],2)
     c2 <- round(coefs[3,1],2)
@@ -164,7 +163,7 @@ lm_eqn <- function(reg){
                      list(a = format(coef(reg)[[1]], digits = 2),
                           b = format(coef(reg)[[2]], digits = 2),
                           r2 = format(summary(reg)$r.squared, digits = 3)))
-  }else if (dim(coefs)[1] == 3) {
+  } else if (dim(coefs)[1] == 3) {
     eq <- substitute(y == a + b %.% x+ c %.% x^2*","~~r^2~"="~r2,
                      list(a = format(coef(reg)[[1]], digits = 2),
                           b = format(coef(reg)[[2]], digits = 2),
@@ -187,7 +186,7 @@ conf.bar <- function(x, reg, alpha, varname = ""){
   if (identical(varname,"") == 1)
   {
     names(newdata) <- names(reg$coefficients)[2]
-  }else{
+  } else {
     names(newdata) <- varname
   }
   #        print(newdata)
@@ -225,12 +224,13 @@ export <- function(fname){
 # `openPdf(pdfname = "test")`
 # `closePdf(pdfname = "test")`
 
-openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "Output-Graphics", path = getwd()){
+openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "Output-Graphics", path = getwd()) {
   closeFigs()
   # Opening "test.pdf"
   if (!file.exists(subfolder)) {
     dir.create(file.path(path, subfolder))
   }
+
   pdfname <- subfolder %/% pdfname
   {pdf(paste0(pdfname, " [R].pdf"), width = width, height = height, paper = "a4r",
        onefile = T, bg = "white");
@@ -252,7 +252,7 @@ clr <- function(mode="notall"){
   if ((mode == "all") || (mode == "All")) {
     ll <- ll[!ll %in% c("clr","clc")]
     rm(list = ll, envir = ENV)
-  }else if (mode == "notall") {
+  } else if (mode == "notall") {
     rm(list = setdiff(ls(envir = ENV), lsf.str(envir = ENV)), envir = ENV)}
 }
 # clc()
@@ -260,7 +260,7 @@ clc <- function(){cat("\014")}
 
 # Close all open figures ------
 # `closeFigs()`
-closeFigs <- function(){
+closeFigs <- function() {
   graphics.off()
 }
 
@@ -275,7 +275,7 @@ to.chr <- function(string){
 as.numeric.adv <- function(x) {
   if (class(x) == "factor") {
     as.numeric(levels(x))[x]
-  }else{
+  } else {
     as.numeric(x)
   }
 }
@@ -295,6 +295,7 @@ convertClass <- function(obj, types, date.origin = "1970-01-01"){
     # in case obj is tbl_df or tbl
     obj <- as.data.frame(obj)
   }
+
   if (is.character(types)) {
     types <- types %>%
       gsub(.,pattern = ",", replacement = "") %>%
@@ -302,11 +303,13 @@ convertClass <- function(obj, types, date.origin = "1970-01-01"){
       gsub(.,pattern = "-", replacement = "") %>%
       strsplit(.,"") %>% unlist(.)
   }
+
   origin <- date.origin
+
   as.date <- function(x){
     if (class(x) == "factor") {
       as.Date(x, origin = origin)
-    }else{
+    } else {
       as.Date(as.numeric.adv(x), origin = origin)
     }}
   out <- lapply(1:length(obj),
@@ -399,19 +402,19 @@ save.csv <- function(data,file.name,path=getwd(), row.Names = FALSE,
   # we don't wan't to add another .csv
   if (char.count(file.name) == 0) {
     file.name <- path %/% file.name %+% ".csv"
-  }else if (char.count(file.name) == 1) {
+  } else if (char.count(file.name) == 1) {
     file.name <- path %/% file.name
-  }else if (char.count(file.name) == 2) { # Checking whether we have >1 "."
+  } else if (char.count(file.name) == 2) { # Checking whether we have >1 "."
     last.ext <- rev(unlist(strsplit(file.name,char,fixed = TRUE)))[1]
     second.last.ext <- rev(unlist(strsplit(file.name,char,fixed = TRUE)))[2]
     if (last.ext == second.last.ext) {
       file.name <-  paste(unlist(strsplit(file.name,char,fixed = TRUE))[1:2],
                           collapse = ".")
-    }else{
+    } else {
       warning(paste0("File name <", file.name,
                      "> has muliple '.' other than extention"))
     }
-  }else{
+  } else {
     if (unique(rev(unlist(strsplit(file.name,char,fixed = TRUE)))[1:3]) == "csv") {
       stop(paste0("File name <", file.name, "> has muliple '.' other than extention"))
     }
@@ -441,25 +444,19 @@ runInfo <- function(time=FALSE){
 
 # Get User Name -----------------------------------------------------------
 # `getUser()`
-getUser <- function(){
+getUser <- function() {
   env <- if (.Platform$OS.type == "windows") "USERNAME" else "USER"
   unname(Sys.getenv(env))
-}
-
-# Header to append to any new R file -------------------------------------------
-# `header()`
-header <- function() {
-  file.show("C:/Users/Ankur/hubiC/Work/Projects/Utilities/util_Global/R-Header.txt")
 }
 
 # Publication Theme for ggplot2 -------------------------------------------
 # `theme_publication(base_size=14, base_family="")`
 # `scale_fill_Publication()`
 # `scale_colour_Publication`
-install(c("ggthemes","grid"))
+
 theme_Publication <- function(base_size=14, base_family="") {
-  library(grid)
-  library(ggthemes)
+  install("grid")
+  install("ggthemes")
   (theme_foundation(base_size = base_size, base_family = base_family) +
       theme(plot.title = element_text(face = "bold",
                                       size = rel(1.2), hjust = 0.5),
@@ -489,15 +486,14 @@ theme_Publication <- function(base_size=14, base_family="") {
 }
 # scale_fill_Publication()
 scale_fill_Publication <- function(...){
-  library(scales)
+  install("scales")
   discrete_scale("fill","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
-
 }
+
 # scale_colour_Publication()
 scale_colour_Publication <- function(...){
-  library(scales)
+  install("scales")
   discrete_scale("colour","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
-
 }
 
 # Reset Everything (Like a new R session) --------------------------------------
@@ -649,58 +645,6 @@ mov.sd <- function(x, width, align = "center", partial = FALSE) {
   return(out)
 }
 
-# HTML Function -----------------------------------------------------------
-# Various HTML Functions
-# `hr(0)`
-install("rstudioapi")
-install("devtools")
-if ("roxygen2Comment" %in% rownames(installed.packages())) {
-  if ("roxygen2Comment" %!in% (.packages())) {
-    suppressPackageStartupMessages(do.call("library", list("roxygen2Comment")))}
-} else {
-  devtools::install_github("csgillespie/roxygen2Comment")
-}
-
-hr <- function(x = 0){
-  if (x == 1) {
-    cat('<hr style="height:1px;border:none;color:#333;background-color:#333;" />')
-  } else if (x == 0) {
-    cat("<hr />")
-  }
-}
-# `gototop()`
-gototop <- function(x = 1){
-  if (x == 0) {
-    cat("<a href='#top'> Go back to the Table of Contents </a> ")
-  } else if (x == 1) {
-    cat('<table width="100%"> <td><hr style="height:1px;border:none;color:#333;background-color:#333;"  /></td> <td style="width:1px; padding: 0 10px; white-space: nowrap;"><a href="#top"> Go back to the Table of Contents </a></td> <td><hr style="height:1px;border:none;color:#333;background-color:#333;" /></td> </table>')
-  }
-
-}
-# export to html
-# 'export2html(".R")'
-export2html <- function(filename, folder = 'Output-html', suppress_warnings = TRUE, browse = TRUE, output_file = NULL) {
-  if (suppress_warnings) {
-    suppressWarnings(rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE,
-                                       output_file = output_file))
-  } else {
-    rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE, output_file = output_file)
-  }
-  if (is.null(output_file)) {
-    output_file = folder %/% substr(filename, start = 1, nchar(filename) - 2)
-  }
-  if (browse) {
-    file_wt_ext <- folder %/% output_file
-    if (file.exists(file_wt_ext %+% ".html")) {
-      browseURL(file_wt_ext %+% ".html", getOption("browser"))
-    } else if (file.exists(file_wt_ext %+% ".nb.html")) {
-      browseURL(file_wt_ext %+% ".nb.html", getOption("browser"))
-    } else {
-      stop("Corresponding html file doesnt exists!!")
-    }
-  }
-}
-
 # Insert Code/Text as Text in Script File Automatically -------------------
 install("rstudioapi")
 i <- function(insert = c("hr","chunk","gototop","section","date")) {
@@ -820,15 +764,6 @@ fix.levels = function(x, level_map) {
   # level_map - Vector of named unique levels.
   # return - Releveled 'x.'
   return(factor(level_map[levels(x)[x]], level_map, names(level_map)))
-}
-
-# rename.col.variable.to ------
-# Renaming variable while melting the data
-rename.col.variable.to <- function(df,
-                                   old.var.name = "variable",
-                                   new.var.name = "variable") {
-  names(df)[names(df) == old.var.name] <- new.var.name
-  return(df)
 }
 
 # sum.adv ------
@@ -988,6 +923,32 @@ is.attrib.same <- function(df, by_col, attrib_cols){
     return(df_check)
   }
 }
+
+# export2html -------------------------------------------------------------------------------------------
+# export to html
+# 'export2html(".R")'
+export2html <- function(filename, folder = 'Output-html', suppress_warnings = TRUE, browse = TRUE, output_file = NULL) {
+  if (suppress_warnings) {
+    suppressWarnings(rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE,
+                                       output_file = output_file))
+  } else {
+    rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE, output_file = output_file)
+  }
+  if (is.null(output_file)) {
+    output_file = folder %/% substr(filename, start = 1, nchar(filename) - 2)
+  }
+  if (browse) {
+    file_wt_ext <- folder %/% output_file
+    if (file.exists(file_wt_ext %+% ".html")) {
+      browseURL(file_wt_ext %+% ".html", getOption("browser"))
+    } else if (file.exists(file_wt_ext %+% ".nb.html")) {
+      browseURL(file_wt_ext %+% ".nb.html", getOption("browser"))
+    } else {
+      stop("Corresponding html file doesnt exists!!")
+    }
+  }
+}
+
 
 # r2html -------------------------------------------------------------------------------------------------
 # Funtion which converts normal R code into a rmarkdown code. There already exists some implementation, for example see <https://rmarkdown.rstudio.com/articles_report_from_r_script.html> for more details.
@@ -1184,3 +1145,4 @@ interpolate <- function(x, y, df, y_per, graph = FALSE){
     return(list(reg, xval))
   }
 }
+
