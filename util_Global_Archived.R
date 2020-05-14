@@ -14,3 +14,45 @@ clr()
 # Loading required packages
 Packages <-     c("tidyverse")
 install(Packages); rm(Packages)
+# Header to append to any new R file -------------------------------------------
+# `header()`
+header <- function() {
+  file.show("C:/Users/Ankur/hubiC/Work/Projects/Utilities/util_Global/R-Header.txt")
+}
+# HTML Function -----------------------------------------------------------
+# Various HTML Functions
+# `hr(0)`
+install("rstudioapi")
+install("devtools")
+if ("roxygen2Comment" %in% rownames(installed.packages())) {
+  if ("roxygen2Comment" %!in% (.packages())) {
+    suppressPackageStartupMessages(do.call("library", list("roxygen2Comment")))}
+} else {
+  devtools::install_github("csgillespie/roxygen2Comment")
+}
+
+hr <- function(x = 0){
+  if (x == 1) {
+    cat('<hr style="height:1px;border:none;color:#333;background-color:#333;" />')
+  } else if (x == 0) {
+    cat("<hr />")
+  }
+}
+# `gototop()`
+gototop <- function(x = 1){
+  if (x == 0) {
+    cat("<a href='#top'> Go back to the Table of Contents </a> ")
+  } else if (x == 1) {
+    cat('<table width="100%"> <td><hr style="height:1px;border:none;color:#333;background-color:#333;"  /></td> <td style="width:1px; padding: 0 10px; white-space: nowrap;"><a href="#top"> Go back to the Table of Contents </a></td> <td><hr style="height:1px;border:none;color:#333;background-color:#333;" /></td> </table>')
+  }
+
+}
+# rename.col.variable.to ------
+# Renaming variable while melting the data
+rename.col.variable.to <- function(df,
+                                   old.var.name = "variable",
+                                   new.var.name = "variable") {
+  names(df)[names(df) == old.var.name] <- new.var.name
+  return(df)
+}
+
