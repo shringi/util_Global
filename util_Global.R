@@ -1158,3 +1158,11 @@ create.dir.str <- function() {
 }
 
 
+
+# file.info.adv ---------------------------------------------------------------------------------------------
+# given a file name this function gives the information of file creation, modified and accessed time-stamps along with the md5 check sum values.
+file.info.adv <- function(file.name) {
+  install("openssl")
+  return(cbind(file.name, file.info(file.name),"md5" = as.character(md5(file.name))))
+}
+
