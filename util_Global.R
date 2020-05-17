@@ -1166,3 +1166,61 @@ file.info.adv <- function(file.name) {
   return(cbind(file.name, file.info(file.name),"md5" = as.character(md5(file.name))))
 }
 
+# files.status() ----------------------------------------------------------------------------------------
+# The purpose of this function is to track files which may not be under version control of the current repository.
+# One use case is involves a sub-directory containing big data files which we don't want to keep under version control. A version control folder (ex. git) becomes very big after a while. However, we might be interested whether such files have been updated after an action. In such cases we can check the md5 checksums of the files or the changes in the last modification details of the files. This is exactly this function does.
+#
+# Usage
+#
+# files.status(folder_check = "01-Data, folder_out = "03-Tables")
+#
+# This will check whether the files in "01-Data" folder has been updated or not.
+# if we choose to write the logs then we have to additionally provide the option "write = TRUE"
+#
+# Note:- Current directory has to be under git as function pulls the sha tag of the current git repository as well as the commit message.
+
+files.status <- function(folder_check = "01-Data", folder_out = "03-Tables", write = FALSE) {
+  install(c("git2r","tidyverse"))
+  outfile <- folder_check %+% "_Logs.csv"
+  file.names <- list.files(folder_check, recursive = TRUE, full.names = TRUE)
+  if (!file.exists(folder_out %/% outfile)) {
+    out_prev <- NULL
+    out_prev_rows <- ""
+  } else {
+    out_prev <- read_csv(folder_out %/% outfile,
+                         col_types = cols(mtime = col_datetime(format = "%Y-%m-%d %T %Z"),
+                                          ctime = col_datetime(format = "%Y-%m-%d %T %Z"),
+                                          atime = col_datetime(format = "%Y-%m-%d %T %Z"))) %>%
+      mutate(mtime  = format(mtime) %+% " IST",
+             ctime  = format(ctime) %+% " IST",
+             atime  = format(atime) %+% " IST") %>%
+      as.data.frame()
+    out_prev_rows <- do.call(paste0, out_prev)
+  }
+  git_mess = git2r::revparse_single(getwd(),"HEAD")
+  suppressWarnings({
+    out <- map_df(file.names, file.info.adv) %>%
+      mutate(mtime  = format(mtime, usetz = TRUE),
+             ctime  = format(ctime, usetz = TRUE),
+             atime  = format(atime, usetz = TRUE),
+             sha = git_mess$sha,
+             message = git_mess$message
+      )})
+
+  out_present <- do.call(paste0, out) %in% out_prev_rows
+  if (all(out_present)) {
+    message("All is well!")
+  } else {
+    out <- out
+    temp <- bind_rows(out_prev, out)
+    output <- temp[!duplicated(temp),] %>%
+      arrange(file.name, ctime,  mtime, atime)
+    message("Following files has been updated!")
+    print(out[!out_present,"file.name"] %>% unlist())
+    if (write) {
+      write_csv(output, path =  folder_out %/% outfile)
+      message("Updated the information")
+    }
+  }
+}
+
