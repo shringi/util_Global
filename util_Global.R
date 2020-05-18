@@ -220,7 +220,7 @@ export <- function(fname){
   dev.off()
 }
 
-# Opne and closing of pdf device ------------------------------------------
+# Open and closing of pdf device ------------------------------------------
 # `openPdf(pdfname = "test")`
 # `closePdf(pdfname = "test")`
 
@@ -685,38 +685,48 @@ lsos <- function(..., n=10) {
 }
 
 # function to see logs/ diary of work and project progress ------
-diary <- function(){
+diary <- function(dir = "C:/Users/Ankur/OneDrive - Indian Institute of Science/Work",
+                  filename = "[Diary].xlsm",
+                  highlight_proj = "Growth"){
   #Installing necessary plugins
-  install(c("dplyr","DT","readxl","htmlwidgets"))
+  install(c("tidyverse", "DT", "readxl", "htmlwidgets"))
   #Name and path for the file
-  dir <- "c:/Users/Ankur/hubiC/Work/Projects/"
-  name <- "Diary&Tasks[Ankur]"
-  table <- read_excel(dir %/% name %+% ".xlsm",sheet = "Work_Diary")
-  #` Converting classes
-  table$`#` <- as.integer(table$`#`)
-
-  table$`Project` <- as.factor(table$`Project`)
-  table$Section <- as.factor(table$Section)
-  table$`Context File` <- as.factor(table$`Context Files`)
-  table$`Task Type` <- as.factor(table$`Task_Type`)
+  table <- read_excel(dir %/% filename,
+                      sheet = "Work_Diary") %>%
+    mutate(`#` = as.integer(`#`),
+           Project = as.factor(Project),
+           Section = as.factor(Section),
+           File = as.factor(File),
+           Task_Type = as.factor(Task_Type))
 
   #  Creating html table
-  widget <- datatable(table, class = 'display', filter = list(position = 'top', clear = TRUE, plain = FALSE),
-                      extensions = 'FixedHeader', escape = TRUE,
-                      options = list(initComplete = JS("function(settings, json) {",
-                                                       "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-                                                       "}"),
-                                     paging = TRUE, searchHighlight = TRUE,search = list(smart = TRUE),pageLength = 400,
-                                     autoWidth = TRUE, fixedHeader = TRUE,
-                                     columnDefs = list(list(width = '100%', targets = "_all",
-                                                            className = 'compact')))) %>%
-    formatStyle('Project',target = "row", backgroundColor = styleEqual(c("Growth"), c('yellow'))
-    )
+  widget <- datatable(table,
+                      class = 'display',
+                      filter = list(position = 'top', clear = TRUE, plain = FALSE),
+                      extensions = c('FixedHeader', "KeyTable", "Buttons"),
+                      plugins = "ellipsis",
+                      escape = TRUE,
+                      options = list(paging = TRUE,
+                                     searchHighlight = TRUE,
+                                     search = list(smart = TRUE),
+                                     pageLength = 400,
+                                     autoWidth = TRUE,
+                                     fixedHeader = TRUE,
+                                     keys = TRUE, # Keytable
+                                     dom = 'lBfrtip',
+                                     buttons = I('colvis'),
+                                     columnDefs = list(list(width = '100%',
+                                                            targets = "_all",
+                                                            className = 'hower'),
+                                                       list(targets = "_all",
+                                                            render = JS("$.fn.dataTable.render.ellipsis(50, false )"))))) %>%
+                        DT::formatDate(2, "toLocaleString") %>%
+                        DT::formatStyle(columns = colnames(table), `font-size` = '100%', `width` = "100%")
   #  Saving html table in the same folder as html file
-  DT::saveWidget(widget, dir %/% name %+% '.html',selfcontained = TRUE)
+  DT::saveWidget(widget, dir %/% filename %+% '.html', selfcontained = TRUE)
 
   #  opening the file
-  browseURL(dir %/% name %+% '.html')
+  browseURL(dir %/% filename %+% '.html')
   #https://datatables.net/manual/styling/classes
 }
 
