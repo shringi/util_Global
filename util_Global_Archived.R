@@ -55,4 +55,19 @@ rename.col.variable.to <- function(df,
   names(df)[names(df) == old.var.name] <- new.var.name
   return(df)
 }
-
+# Insert Code/Text as Text in Script File Automatically -------------------
+install("rstudioapi")
+i <- function(insert = c("hr","chunk","gototop","section","date")) {
+  insert <- match.arg(insert)
+  if (insert == "hr") {
+    rstudioapi::insertText(text = "hr() \n")
+  } else if (insert == "chunk") {
+    rstudioapi::insertText(text = "#+ results= 'asis', echo = FALSE \n")
+  } else if (insert == "gototop") {
+    rstudioapi::insertText(text = "gototop() \n")
+  } else if (insert == "section") {
+    rstudioapi::insertText(text = paste0("#+ echo = FALSE \n", "# 01 ------ \n", "###   \n \n", "#+ results= 'asis', echo = FALSE \n", "hr() \n"))
+  } else if (insert == "date") {
+    rstudioapi::insertText(text = format(Sys.time(), format = "%Y-%b-%d %H:%M:%S " %+% weekdays(as.Date(Sys.Date(),'%d-%m-%Y'))))
+  }
+}
