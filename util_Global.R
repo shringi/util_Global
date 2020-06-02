@@ -537,13 +537,34 @@ list.objects <- function(env = .GlobalEnv){
 # Check whether all the elements are same or identical -------------------------
 # `all.same(vector)`
 # `all.identical(x, warn = FALSE)`
-all.same <- function(vector){
+#
+# usage
+# all.same(c(1,1,NA))
+# all.same(c(1,1,NA), na.rm = TRUE)
+# all.same(c(NA, NA, NA), na.rm = TRUE, all.na.as = TRUE)
+# all.same(c(NA, NA ,NA), na.rm = FALSE)
+all.same = function(vector, na.rm = FALSE, all.na.as = NA){
   # Give a vector of values and it will tell whether all the values are same or not
   # Returns boolean results in terms of True or False
-  if (length(unique(vector)) == 1) {
-    return(TRUE)
+  if (!na.rm) {
+    if (length(unique(vector)) == 1) {
+      if (is.na(unique(vector))) {
+        return(all.na.as)
+      } else {
+        return(TRUE)
+      }
+    } else {
+      return(FALSE)
+    }
   } else {
-    return(FALSE)
+    vector <- vector[!is.na(vector)]
+    if (length(vector) == 0){
+      return(all.na.as)
+    } else if (length(unique(vector)) == 1) {
+      return(TRUE)
+    } else {
+      return(FALSE)
+    }
   }
 }
 # all.identical(x, warn = FALSE)
