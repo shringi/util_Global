@@ -587,7 +587,7 @@ all.identical <- function(x, warn = FALSE) {
 
 # Stich (Collapse a vector of strings) ------------------------------------
 # `stich(vec, collapse = " ")`
-stich <- function(vec, collapse = " "){
+stitch <- function(vec, collapse = " "){
   paste0(as.character(vec), collapse = collapse)
 }
 
@@ -1265,4 +1265,9 @@ else
   }
 }
 
+
+
+# hr() --------------------------------------------------------------------------------------------------
+# to print horizontal bar on the console
+hr <- function(width = 80){catn(paste0(rep("\u2500",width), collapse = ""))}
 
