@@ -1270,4 +1270,25 @@ else
 # hr() --------------------------------------------------------------------------------------------------
 # to print horizontal bar on the console
 hr <- function(width = 80){catn(paste0(rep("\u2500",width), collapse = ""))}
-
+# get.empty.columns() -----------------------------------------------------------------------------------
+# Function gets the empty columns of any stand, mortality or regeneration file
+# usage
+# get_empty.columns(data = stand.df, group_by = "census)
+get.empty.columns <- function(data, group_by) {
+  install("knitr")
+  group_by <- if (missing(group_by)) 'All' else sym(group_by)
+  out <- data %>%
+    group_by(!!group_by) %>%
+    summarise_all(~all(is.na(.) | {as.character(.)==""})) %>%
+    ungroup() %>%
+    mutate_at(vars(-census), ~as.logical(.)) %>%
+    mutate(empty.any = rowSums(select(.,-census))) %>%
+    dplyr::filter(empty.any > 0) %>%
+    dplyr::select(-empty.any) %>%
+    mutate_at(vars(-census), ~if_else(.,"E",""))
+  if (dim(out)[1] > 1) {
+    print(kable(out, format = "rst"))
+  } else {
+    catn("There are no empty columns")
+  }
+}
