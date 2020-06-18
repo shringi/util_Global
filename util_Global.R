@@ -370,14 +370,17 @@ char.count <- function(string, Char ="."){
 
 # Add Path to filename ----------------------------------------------------
 # `getwd()`
-"%/%" = function(Path.Folder.Data,File.Name){
-  # Cheking whether / was already added to path
-  if (substr(Path.Folder.Data,nchar(Path.Folder.Data),nchar(Path.Folder.Data)) == "/") {
-    File.Name <- paste0(Path.Folder.Data, File.Name)
-  }else{
-    File.Name <- paste0(Path.Folder.Data, "/", File.Name)
+"%/%" = function(path, file) {
+  if (substr(file, 1, 1) == "/") {
+    file = substr(file, 2, nchar(file))
   }
-  return(File.Name)
+  if (substr(file, nchar(file), nchar(file)) == "/" ) {
+    file = substr(file, 1, nchar(file) - 1 )
+  }
+  if (substr(path, nchar(path), nchar(path)) != "/" ) {
+    path = paste0(path, "/")
+  }
+  return(paste0(path, file ))
 }
 
 # Not in the list ----------------------------------------------------
@@ -386,8 +389,8 @@ char.count <- function(string, Char ="."){
 
 # Save data as csv file (no need to worry about path and extension) ------------
 # `save.csv(data, file.name, path = getwd(), subfolder = "Output-Tables" )`
-save.csv <- function(data,file.name,path=getwd(), row.Names = FALSE,
-                     subfolder="03-Tables"){
+save.csv <- function(data,file.name, path = getwd(), row.Names = FALSE,
+                     subfolder = "03-Tables"){
   # In case my path has forward slash
   if (substr(path,nchar(path),nchar(path)) != "/") {
     path <- paste0(path,"/")
@@ -741,8 +744,8 @@ diary <- function(dir = "C:/Users/Ankur/OneDrive - Indian Institute of Science/W
                                                             className = 'hower'),
                                                        list(targets = "_all",
                                                             render = JS("$.fn.dataTable.render.ellipsis(50, false )"))))) %>%
-                        DT::formatDate(2, "toLocaleString") %>%
-                        DT::formatStyle(columns = colnames(table), `font-size` = '100%', `width` = "100%")
+    DT::formatDate(2, "toLocaleString") %>%
+    DT::formatStyle(columns = colnames(table), `font-size` = '100%', `width` = "100%")
   #  Saving html table in the same folder as html file
   DT::saveWidget(widget, dir %/% filename %+% '.html', selfcontained = TRUE)
 
@@ -1244,25 +1247,25 @@ files.status <- function(folder_check = "01-Data", folder_out = "03-Tables", wri
 # paste which can ignore NA values
 # taken from https://stackoverflow.com/questions/13673894/suppress-nas-in-paste
 paste.adv <- function(..., sep = " ", collapse = NULL, na.rm = F) {
-if (na.rm == F)
-  paste(..., sep = sep, collapse = collapse)
-else
-  if (na.rm == T) {
-    paste.na <- function(x, sep) {
-      x <- gsub("^\\s+|\\s+$", "", x)
-      ret <- paste(na.omit(x), collapse = sep)
-      is.na(ret) <- ret == ""
-      return(ret)
-    }
-    df <- data.frame(..., stringsAsFactors = F)
-    ret <- apply(df, 1, FUN = function(x) paste.na(x, sep))
+  if (na.rm == F)
+    paste(..., sep = sep, collapse = collapse)
+  else
+    if (na.rm == T) {
+      paste.na <- function(x, sep) {
+        x <- gsub("^\\s+|\\s+$", "", x)
+        ret <- paste(na.omit(x), collapse = sep)
+        is.na(ret) <- ret == ""
+        return(ret)
+      }
+      df <- data.frame(..., stringsAsFactors = F)
+      ret <- apply(df, 1, FUN = function(x) paste.na(x, sep))
 
-    if (is.null(collapse))
-      ret
-    else {
-      paste.na(ret, sep = collapse)
+      if (is.null(collapse))
+        ret
+      else {
+        paste.na(ret, sep = collapse)
+      }
     }
-  }
 }
 
 
