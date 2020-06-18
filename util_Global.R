@@ -388,41 +388,22 @@ char.count <- function(string, Char ="."){
 "%!in%" = function(x,y)!('%in%'(x,y))
 
 # Save data as csv file (no need to worry about path and extension) ------------
-# `save.csv(data, file.name, path = getwd(), subfolder = "Output-Tables" )`
-save.csv <- function(data,file.name, path = getwd(), row.Names = FALSE,
-                     subfolder = "03-Tables"){
-  # In case my path has forward slash
-  if (substr(path,nchar(path),nchar(path)) != "/") {
-    path <- paste0(path,"/")
-  }
+# `write.csv.adv (data, file.name, path = getwd(), subfolder = "Output-Tables" )`
+write.csv.adv <- function(data, file.name, path = getwd(), row.Names = FALSE,
+                          subfolder = "03-Tables"){
+
   # if subfolder doesn't exist then create it.
   if (!file.exists(subfolder)) {
     dir.create(file.path(path, subfolder))
   }
-  path <- path %/% subfolder
-  char = "."
   # In case my file name already have .csv in it
   # we don't wan't to add another .csv
-  if (char.count(file.name) == 0) {
-    file.name <- path %/% file.name %+% ".csv"
-  } else if (char.count(file.name) == 1) {
-    file.name <- path %/% file.name
-  } else if (char.count(file.name) == 2) { # Checking whether we have >1 "."
-    last.ext <- rev(unlist(strsplit(file.name,char,fixed = TRUE)))[1]
-    second.last.ext <- rev(unlist(strsplit(file.name,char,fixed = TRUE)))[2]
-    if (last.ext == second.last.ext) {
-      file.name <-  paste(unlist(strsplit(file.name,char,fixed = TRUE))[1:2],
-                          collapse = ".")
-    } else {
-      warning(paste0("File name <", file.name,
-                     "> has muliple '.' other than extention"))
-    }
+  if (substr(file.name, nchar(file.name) - 3, nchar(file.name)) != ".csv") {
+    file = paste0(file.name, ".csv")
   } else {
-    if (unique(rev(unlist(strsplit(file.name,char,fixed = TRUE)))[1:3]) == "csv") {
-      stop(paste0("File name <", file.name, "> has muliple '.' other than extention"))
-    }
+    file = gsub("(.csv)+$", ".csv", file.name)
   }
-  write.csv(data,file.name,row.names = row.Names)
+  write.csv(data, path %/% subfolder %/% file, row.names = row.Names)
 }
 
 # Saving session info to a txt file --------------------------------------------
