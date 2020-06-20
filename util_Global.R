@@ -1276,3 +1276,44 @@ get.empty.columns <- function(data, group_by) {
     catn("There are no empty columns")
   }
 }
+
+# drop_unfit_cols() ------------------------------------------------------------------------------------------
+drop_unfit_cols <- function(data, ..., contains = "", na.rm = TRUE) {
+  vars <- tidyselect::eval_select(expr(c(...)), data)
+  if (!is_empty(vars)) {
+    data.filtered = data %>% dplyr::select(all_of(vars))
+  } else {
+    data.filtered = data
+  }
+  if (any(is.na(contains))) {
+    stop("contains can not be NA!")
+  }
+  if (na.rm) {
+    cols <- names(data.filtered)[apply(data.filtered, 2, function(x) all(is.na(x) | x %in% contains))]
+  } else {
+    cols <- names(data.filtered)[apply(data.filtered, 2, function(x) all(x %in% contains))]
+  }
+  out <- data %>% select(-all_of(cols))
+  return(out)
+}
+
+# drop_unfit_rows() -------------------------------------------------------------------------------------
+drop_unfit_rows <- function(data, ..., contains = c(""), na.rm = TRUE){
+  vars <- tidyselect::eval_select(expr(c(...)), data)
+  if (is_empty(vars)) {
+    vars = vars(all_of(names(data)))
+  }
+  if (any(is.na(contains))) {
+    stop("contains can not be NA!")
+  }
+  if (na.rm) {
+    out <- data %>%
+      filter_at(vars, any_vars(!(is.na(.) | . %in% contains)))
+  } else {
+    out <- data %>%
+      filter_at(vars, any_vars(!(is.na(.))))
+  }
+  return(out)
+}
+
+

@@ -57,29 +57,40 @@ Source it locally and you are good to go.
 # Usage
 
 
-### drop_cols() : Select out columns based on values
+### drop_unfit_cols()/drop_unfit_rows() : Select out columns/rows based on unfit values
 #### syntax
 ```psudeocode
-drop_cols(data, ..., contains = "", na.rm = TRUE)
+drop_unfit_cols(data, ..., contains = "", na.rm = TRUE)
 ```
 #### Usage
 ```{r}
-df_c <- data.frame(c1 = c(1,2,3,4),
-                   c2 = c(11, 12, 13, NA),
-                   c3 = c("a", "a", "a", "a"),
-                   c4 = c("a", "a", "a", NA_character_),
-                   c5 = rep(NA_character_, 4),
-                   c6 = rep("",4),
-                   c7 = c(rep(10,3),NA))
+df <- tibble(c1 = c("a", "", "c", "d", NA, "f", "g", "h"),
+             c2 = c(NA, NA, 3, 4, NA, 6, 7, 8),
+             c3 = c("A", "", "C", "D", NA, "#Value!", "G", "H"),
+             c4 = c(NA, NA, NA, NA, NA, NA, NA, NA),
+             c5 = c(0.001, NA, -99, 1, NA, NA, 1000, NA),
+             c6 = c("", "", "", "", "", "", "", NA),
+             c7 = c("#Value!", "", "", "#Value!", NA, "#Value!", "", "#Value!"), 
+             c8 = c(-99, NA, -99, NA, NA, NA, -99, NA))
+df
 
 # Filterning blank or NA filled columns
-df_c %>% drop_cols()
+df %>% drop_unfit_cols()
 
-# Filterning blank or NA filled columns from a range
-df_c %>% drop_cols(c4:c6)
+# Filterning blank or NA filled rows
+df %>% drop_unfit_rows()
 
-# Filtering blacnk or NA fillder columns
-df_c %>% drop_cols(c4:c6, contains = list("a", 10))
+# Filterning blank or NA filled columns from a column range
+df %>% drop_unfit_cols(c3:c8)
+
+# Filterning blank or NA filled rows from a column range
+df %>% drop_unfit_rows(c3:c8)
+
+# Filtering selected or NA filled columns from a column range
+df %>% drop_unfit_cols(c3:c8, contains = list("", "#Value!", -99))
+
+# Filtering selected or NA filled rows from a column range
+df %>% drop_unfit_rows(c3:c8, contains = list("", "#Value!", -99))
 ```
 ### install() : loading packages
 every now or then you require a package to run before you can use some R code you found online. Its typically starts with loading a `library()` or `require()`. For example
@@ -88,10 +99,10 @@ If "package_name" is already install then you are good to go, however if it is n
 
 ```pseudocode
 Error in library("package_name") : 
-  there is no package called ‘package_name’
+there is no package called ‘package_name’
 ```
 
- Then one needs install it manually either by using RStudio GUI or writing a command such as 
+Then one needs install it manually either by using RStudio GUI or writing a command such as 
 
 ```R
 install.packages("package_name")
@@ -115,5 +126,5 @@ A file containing plain snippets. Copy these snippets, modify and add in your RS
 
 # Feedback
 
-- Please feel free to raise a issue on github if you are find a bug or suggest a feature.
-- If you come across any  functions which surpasses any of the functions or then please let me know in the issues as well.
+- Please feel free to raise a issue on github if you are find a bug, typo or suggest a feature.
+- If you come across functions which supersedes any of functions presented here then please let me know by raising an issue.
