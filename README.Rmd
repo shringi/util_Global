@@ -1,0 +1,119 @@
+---
+title: "Util_Global.R"
+output: github_document
+---
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "##", fig.retina = 2, fig.path = "README_figs/README-")
+```
+![GitHub top language](https://img.shields.io/github/languages/top/shringi/util_Global)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/shringi/util_Global)
+![GitHub](https://img.shields.io/github/license/shringi/util_Global)
+
+![GitHub commit activity](https://img.shields.io/github/commit-activity/y/shringi/util_Global)
+![GitHub last commit](https://img.shields.io/github/last-commit/shringi/util_Global)
+
+![GitHub issues](https://img.shields.io/github/issues/shringi/util_Global)
+
+
+
+# Motivation
+R and its package repository are great. I could find almost all kinds of functions, various tricks and tips online. However, as I worked on R  and R studio long enough. I happen to create custom functions which I find it convenient to use for my purpose. I slowly began to realize that I should share some of them with others in case they find it helpful.
+
+# Functions
+The following functions are implemented (broad category wise)
+
+### Calculations
+- `interpolate`
+- `max.adv`
+- `min.adv`
+- `sum.adv`
+- `mov.avg`
+- `mov.sd`
+- `rm.na`
+
+### Graphics
+### Info
+### Management
+### Manipulation
+### Operators
+### Print
+### Productivity
+### Summary
+
+
+
+# Installation
+Just download the **util_Global.R** file. 
+```{r}
+source("util_Global.R")
+install("tidyverse")
+
+```
+Source it locally and you are good to go.
+
+
+# Usage
+
+
+### drop_cols() : Select out columns based on values
+#### syntax
+```psudeocode
+drop_cols(data, ..., contains = "", na.rm = TRUE)
+```
+#### Usage
+```{r}
+df_c <- data.frame(c1 = c(1,2,3,4),
+                   c2 = c(11, 12, 13, NA),
+                   c3 = c("a", "a", "a", "a"),
+                   c4 = c("a", "a", "a", NA_character_),
+                   c5 = rep(NA_character_, 4),
+                   c6 = rep("",4),
+                   c7 = c(rep(10,3),NA))
+
+# Filterning blank or NA filled columns
+df_c %>% drop_cols()
+
+# Filterning blank or NA filled columns from a range
+df_c %>% drop_cols(c4:c6)
+
+# Filtering blacnk or NA fillder columns
+df_c %>% drop_cols(c4:c6, contains = list("a", 10))
+```
+### install() : loading packages
+every now or then you require a package to run before you can use some R code you found online. Its typically starts with loading a `library()` or `require()`. For example
+
+If "package_name" is already install then you are good to go, however if it is not installed (which is the case sometimes), then you will get an error as following-
+
+```pseudocode
+Error in library("package_name") : 
+  there is no package called ‘package_name’
+```
+
+ Then one needs install it manually either by using RStudio GUI or writing a command such as 
+
+```R
+install.packages("package_name")
+```
+
+I thought, wouldn't it be better that I write one command `install("package_name")` and it detects automatically whether the package is available or not. If it not available then goes ahead and downloads it automatically behind the scenes using `install.packages()`, else loads it using `library()` command. So created one such command `install()` for my personal use and many others such tiny tweaked functions and thought of sharing on the github.
+
+# Scripts
+
+## **util_Global.R**
+
+This is the main scripts which hosts all the custom functions. A list of function and their usage are mentioned below.
+
+## util_Global_Archived.R
+
+All the functions, which I no longer use, or found a way around are shifted here.
+
+## Snippets.txt
+
+A file containing plain snippets. Copy these snippets, modify and add in your RStudio settings (Tools > Global Options > Code > Editing > Snippets > Edit Snippets button) for handy use. You can find more information about RStudio Snippets from [here](https://support.rstudio.com/hc/en-us/articles/204463668-Code-Snippets).
+
+# Feedback
+
+- Please feel free to raise a issue on github if you are find a bug or suggest a feature.
+- If you come across any  functions which surpasses any of the functions or then please let me know in the issues as well.
