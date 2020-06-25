@@ -41,7 +41,12 @@ The following functions are implemented (broad category wise)
 ### Print
 ### Productivity
 ### Summary
-
+- `get.empty.columns`: Get empty columns (NA or blank) in a data.frame
+- `stat.summary`
+- `summary.adv`
+- `summary.non.num`
+- `summary.num`
+- `summaryLM`
 
 
 # Installation
@@ -59,7 +64,7 @@ Source it locally and you are good to go.
 
 ### drop_unfit_cols()/drop_unfit_rows() : Select out columns/rows based on unfit values
 #### syntax
-```psudeocode
+```{r, eval=FALSE}
 drop_unfit_cols(data, ..., contains = "", na.rm = TRUE)
 ```
 #### Usage
@@ -92,6 +97,7 @@ df %>% drop_unfit_cols(c3:c8, contains = list("", "#Value!", -99))
 # Filtering selected or NA filled rows from a column range
 df %>% drop_unfit_rows(c3:c8, contains = list("", "#Value!", -99))
 ```
+
 ### install() : loading packages
 every now or then you require a package to run before you can use some R code you found online. Its typically starts with loading a `library()` or `require()`. For example
 
@@ -109,6 +115,18 @@ install.packages("package_name")
 ```
 
 I thought, wouldn't it be better that I write one command `install("package_name")` and it detects automatically whether the package is available or not. If it not available then goes ahead and downloads it automatically behind the scenes using `install.packages()`, else loads it using `library()` command. So created one such command `install()` for my personal use and many others such tiny tweaked functions and thought of sharing on the github.
+
+### get.empty.columns() : Get empty columns (NA or blank) in a data.frame
+In multiple data set sometimes it happens that a critical column is there in the header name but misses any of the data. Or We might be intrested that which columns are completely empty once we group it. This functions provides a visual summary of such sort. (In the outputs `X` represents an empty column)
+
+#### Usage
+```{r}
+df
+
+df %>% get.empty.columns()
+
+rbind(df, df) %>% get.empty.columns(data = ., group.cols = c1)
+```
 
 # Scripts
 

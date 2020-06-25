@@ -1258,19 +1258,20 @@ hr <- function(width = 80){catn(paste0(rep("\u2500",width), collapse = ""))}
 # Function gets the empty columns of any stand, mortality or regeneration file
 # usage
 # get_empty.columns(data = stand.df, group_by = "census)
-get.empty.columns <- function(data, group_by) {
+get.empty.columns <- function(data, group.cols) {
   install("knitr")
-  group_by <- if (missing(group_by)) 'All' else sym(group_by)
+  text = deparse(substitute(group.cols))
   out <- data %>%
-    group_by(!!group_by) %>%
+    group_by({{group.cols}}) %>%
     summarise_all(~all(is.na(.) | {as.character(.)==""})) %>%
     ungroup() %>%
-    mutate_at(vars(-census), ~as.logical(.)) %>%
-    mutate(empty.any = rowSums(select(.,-census))) %>%
+    rowwise() %>%
+    mutate(empty.any = sum(c_across(matches(setdiff(names(.),text))))) %>%
+    ungroup() %>%
     dplyr::filter(empty.any > 0) %>%
     dplyr::select(-empty.any) %>%
-    mutate_at(vars(-census), ~if_else(.,"E",""))
-  if (dim(out)[1] > 1) {
+    mutate(across(matches(setdiff(names(.),text)), ~if_else(.,"X","")))
+  if (dim(out)[1] > 0) {
     print(kable(out, format = "rst"))
   } else {
     catn("There are no empty columns")
