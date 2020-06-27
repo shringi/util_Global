@@ -34,11 +34,16 @@ The following functions are implemented (broad category wise)
 - `rm.na`
 
 ### Graphics
-### Info
+
+
+### Info 
 ### Management
 ### Manipulation
 ### Operators
 ### Print
+- `catn` : cat() function with new line already attached in the end.
+- `hr`
+- `print.warn`
 ### Productivity
 ### Summary
 - `get.empty.columns`: Get empty columns (NA or blank) in a data.frame
@@ -61,8 +66,8 @@ Source it locally and you are good to go.
 
 # Usage
 
-
-### drop_unfit_cols()/drop_unfit_rows() : Select out columns/rows based on unfit values
+### drop_unfit_cols(), drop_unfit_rows()
+Select out columns/rows based on unfit values
 #### syntax
 ```{r, eval=FALSE}
 drop_unfit_cols(data, ..., contains = "", na.rm = TRUE)
@@ -98,7 +103,8 @@ df %>% drop_unfit_cols(c3:c8, contains = list("", "#Value!", -99))
 df %>% drop_unfit_rows(c3:c8, contains = list("", "#Value!", -99))
 ```
 
-### install() : loading packages
+### install()
+loading packages
 every now or then you require a package to run before you can use some R code you found online. Its typically starts with loading a `library()` or `require()`. For example
 
 If "package_name" is already install then you are good to go, however if it is not installed (which is the case sometimes), then you will get an error as following-
@@ -113,10 +119,27 @@ Then one needs install it manually either by using RStudio GUI or writing a comm
 ```R
 install.packages("package_name")
 ```
+#### syntax
+```{r, eval = FALSE}
+install("tidyverse")
+```
 
-I thought, wouldn't it be better that I write one command `install("package_name")` and it detects automatically whether the package is available or not. If it not available then goes ahead and downloads it automatically behind the scenes using `install.packages()`, else loads it using `library()` command. So created one such command `install()` for my personal use and many others such tiny tweaked functions and thought of sharing on the github.
+### catn
+cat() command is used to display a message on console or in a file. catn() adds a new line in the end for convenience. Also this function adds the functionality of adding the color and an argument to when or when not to print.
+#### syntax
+```
+catn(..., file = "", sep = " ", fill = FALSE, labels = NULL, append = FALSE, console = TRUE, color = NULL)
+```
+#### usage
+```{r}
+# Color will only work on console!
+catn("A message in blue!", color = "blue")
+```
 
-### get.empty.columns() : Get empty columns (NA or blank) in a data.frame
+### get.empty.columns()
+
+
+Get empty columns (NA or blank) in a data.frame
 In multiple data set sometimes it happens that a critical column is there in the header name but misses any of the data. Or We might be intrested that which columns are completely empty once we group it. This functions provides a visual summary of such sort. (In the outputs `X` represents an empty column)
 
 #### Usage

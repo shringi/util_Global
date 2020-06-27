@@ -497,11 +497,23 @@ reset <- function(){
 # cat() that appends a newline ---------------------------------------
 # `catn(..., file = "", sep = " ", fill = FALSE, labels = NULL, append = FALSE)`
 catn = function(..., file = "", sep = " ", fill = FALSE, labels = NULL,
-                append = FALSE) {
-  cat(..., "\n", file = file, sep = sep, fill = fill, labels = labels,
-      append = append)
-}
+                append = FALSE, console = TRUE, color = NULL) {
+  if (console) {
+    if (!is.null(color)) {
+      install("crayon")
 
+      eval(expr = parse(text = "cat(" %+% color %+% "(" %+% quote(...) %+% "),'\n')"))
+    } else (
+      cat(..., "\n", file = file, sep = sep, fill = fill, labels = labels,
+          append = append)
+    )
+  }
+  if (file != "") {
+    cat(..., "\n", file = file, sep = sep, fill = fill, labels = labels,
+        append = append)
+  }
+
+}
 # List objects available in the environment-------------------------------------
 # `list.objects(env = .GlobalEnv)`
 list.objects <- function(env = .GlobalEnv){
@@ -638,7 +650,7 @@ fuse <- function(df.prfx, df.sufx, merged.Cols , link = "±"){
 # `mov.avg(x, width, align = "center", partial = FALSE, na.rm = FALSE )`
 mov.avg <- function(x, width, align = "center", partial = FALSE, na.rm = FALSE ) {
   # Installing zoo
-  install("zoo")
+    install("zoo")
   out <- rollapply(data = x, width = width, FUN = mean, na.rm = na.rm, align = align, fill = NA, partial = partial)
   return(out)
 }
@@ -1271,11 +1283,11 @@ get.empty.columns <- function(data, group.cols) {
     dplyr::filter(empty.any > 0) %>%
     dplyr::select(-empty.any) %>%
     mutate(across(matches(setdiff(names(.),text)), ~if_else(.,"X","")))
-  if (dim(out)[1] > 0) {
-    print(kable(out, format = "rst"))
-  } else {
-    catn("There are no empty columns")
-  }
+    if (dim(out)[1] > 0) {
+      print(kable(out, format = "rst"))
+    } else {
+      catn("There are no empty columns")
+    }
 }
 
 # drop_unfit_cols() ------------------------------------------------------------------------------------------
