@@ -246,14 +246,23 @@ closePdf <- function(pdfname = "test", subfolder = "04-Graphics"){
 # Clear data or screen -------------------------------------------
 # `clr()`
 # `clr("all")`
-clr <- function(mode="notall"){
+clr <- function(mode="notall", except = NULL) {
   ENV <- globalenv()
   ll <- ls(envir = ENV)
+
+  if (is.null(except)) {
+    except = c("clr", "clc")
+  } else {
+    except = c("clr", "clc", except)
+  }
+
+  ll <- ll[!ll %in% except]
+
   if ((mode == "all") || (mode == "All")) {
-    ll <- ll[!ll %in% c("clr","clc")]
     rm(list = ll, envir = ENV)
   } else if (mode == "notall") {
-    rm(list = setdiff(ls(envir = ENV), lsf.str(envir = ENV)), envir = ENV)}
+    functions <- lsf.str(envir = ENV)
+    rm(list = setdiff(ll, functions), envir = ENV)}
 }
 # clc()
 clc <- function(){cat("\014")}
@@ -1328,5 +1337,3 @@ drop_unfit_rows <- function(data, ..., contains = c(""), na.rm = TRUE){
   }
   return(out)
 }
-
-

@@ -38,6 +38,10 @@ The following functions are implemented (broad category wise)
 
 ### Info 
 ### Management
+#### Objects
+- `clr` : Remove variables from the environment
+- `reset`
+
 ### Manipulation
 ### Operators
 ### Print
@@ -65,7 +69,25 @@ Source it locally and you are good to go.
 
 
 # Usage
-
+### clr()
+clr() is motivated from Matlab function `clr`
+Its an advance and short way of writing `rm(list = ls())`
+#### syntax
+```
+clr(mode = "notall", except = NULL)
+```
+#### usage
+```{r}
+# To delete all the variables except functions!
+clr()
+# To delete all the variables except functions!
+temp = 1
+clr( except = "temp")
+```
+```{r , eval = FALSE}
+# To clean everything except function clr(), and clc()
+clr("all")
+```
 ### drop_unfit_cols(), drop_unfit_rows()
 Select out columns/rows based on unfit values
 #### syntax
@@ -124,7 +146,7 @@ install.packages("package_name")
 install("tidyverse")
 ```
 
-### catn
+### catn()
 cat() command is used to display a message on console or in a file. catn() adds a new line in the end for convenience. Also this function adds the functionality of adding the color and an argument to when or when not to print.
 #### syntax
 ```
@@ -137,7 +159,6 @@ catn("A message in blue!", color = "blue")
 ```
 
 ### get.empty.columns()
-
 
 Get empty columns (NA or blank) in a data.frame
 In multiple data set sometimes it happens that a critical column is there in the header name but misses any of the data. Or We might be intrested that which columns are completely empty once we group it. This functions provides a visual summary of such sort. (In the outputs `X` represents an empty column)
