@@ -976,7 +976,7 @@ export2html <- function(filename, folder = '05-Html', suppress_warnings = TRUE, 
 # 1. Converts R-section to R markdown sections
 # 2. Converts normal comments to roxygen comments automatically
 # 3. Appends detailed output format
-r2html <- function(){
+r2html <- function(numbered_section = FALSE){
   invisible(install("dplyr"))
   file <- rstudioapi::getSourceEditorContext()$path
   flIn  <- readLines(file)
@@ -1001,6 +1001,9 @@ r2html <- function(){
 #'---
 #'*****"
   text_block <- unlist(strsplit(block, split = '\n'))
+  if (!numbered_section) {
+    text_block[10] <- "#'    number_sections: false"
+  }
   # concatenate the old file with the new text
   flIn <- c("#'---", head, text_block, render[1:2], time_now, render[3:4], "#'", "#'*****", flIn)
   secStrt <- which(grepl(flIn, pattern = "# ", perl = TRUE))
