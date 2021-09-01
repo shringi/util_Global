@@ -1006,7 +1006,7 @@ r2html <- function(numbered_section = TRUE){
   }
   # concatenate the old file with the new text
   flIn <- c("#'---", head, text_block, render[1:2], time_now, render[3:4], "#'", "#'*****", flIn)
-  secStrt <- which(grepl(flIn, pattern = "# ", perl = TRUE))
+  secStrt <- which(grepl(flIn, pattern = "^#{1,4} ", perl = TRUE))
   secEnd <- which(grepl(flIn, pattern = "----", perl = TRUE))
   comLines <- which(grepl(flIn, pattern = "^+# "))
   secLines <- intersect(secStrt, secEnd)
