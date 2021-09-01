@@ -246,9 +246,9 @@ closePdf <- function(pdfname = "test", subfolder = "04-Graphics"){
 # Clear data or screen -------------------------------------------
 # `clr()`
 # `clr("all")`
-clr <- function(mode="notall", except = NULL) {
-  ENV <- globalenv()
-  ll <- ls(envir = ENV)
+clr <- function(mode="notall", except = NULL, env = environment()) {
+  # env <- globalenv()
+  ll <- ls(envir = env)
 
   if (is.null(except)) {
     except = c("clr", "clc")
@@ -259,10 +259,10 @@ clr <- function(mode="notall", except = NULL) {
   ll <- ll[!ll %in% except]
 
   if ((mode == "all") || (mode == "All")) {
-    rm(list = ll, envir = ENV)
+    rm(list = ll, envir = env)
   } else if (mode == "notall") {
-    functions <- lsf.str(envir = ENV)
-    rm(list = setdiff(ll, functions), envir = ENV)}
+    functions <- lsf.str(envir = env)
+    rm(list = setdiff(ll, functions), envir = env)}
 }
 # clc()
 clc <- function(){cat("\014")}
@@ -947,12 +947,16 @@ is.attrib.same <- function(df, by_col, attrib_cols){
 # export2html -------------------------------------------------------------------------------------------
 # export to html
 # 'export2html(".R")'
-export2html <- function(filename, folder = '05-Html', suppress_warnings = TRUE, browse = TRUE, output_file = NULL) {
+export2html <- function(filename, folder = '05-Html', suppress_warnings = TRUE,
+                        browse = TRUE, output_file = NULL) {
+  env_new <- new.env()
   if (suppress_warnings) {
-    suppressWarnings(rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE,
-                                       output_file = output_file))
+    suppressWarnings(rmarkdown::render(filename, output_dir = folder,
+                                       clean = TRUE, quiet = TRUE,
+                                       output_file = output_file, envir = env_new))
   } else {
-    rmarkdown::render(filename, output_dir = folder, clean = TRUE, quiet = TRUE, output_file = output_file)
+    rmarkdown::render(filename, output_dir = folder, clean = TRUE,
+                      quiet = TRUE, output_file = output_file, envir = env_new)
   }
   if (is.null(output_file)) {
     output_file = folder %/% substr(filename, start = 1, nchar(filename) - 2)
@@ -967,9 +971,8 @@ export2html <- function(filename, folder = '05-Html', suppress_warnings = TRUE, 
       stop("Corresponding html file doesnt exists!!")
     }
   }
+ rm(env_new)
 }
-
-
 # r2html -------------------------------------------------------------------------------------------------
 # Funtion which converts normal R code into a rmarkdown code. There already exists some implementation, for example see <https://rmarkdown.rstudio.com/articles_report_from_r_script.html> for more details.
 # This function however does an additional things.
