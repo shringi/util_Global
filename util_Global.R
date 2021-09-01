@@ -47,7 +47,7 @@ install <- function(package1, ...)
   invisible(lapply(packages, load_it, loaded, installed));
 }
 
-# Plotting two varibales on different y axis -----------------------------------
+# Plotting two variables on different y axis -----------------------------------
 # `plotyy(x, y1, y2, ...)`
 plotyy <- function(x,y1,y2, # Required Arguments
                    y1.lim = NULL, y2.lim = NULL, # Axis limits
@@ -81,7 +81,7 @@ plotyy <- function(x,y1,y2, # Required Arguments
          pch = c(y1.pch, y2.pch),
          legend = c(y1.legend, y2.legend), text.col = c(y1.col, y2.col))
 }
-# Reseting parametes (Required when you messed up with plot parameters)---------
+# Resetting parameters (Required when you messed up with plot parameters)---------
 # `resetPar()`
 resetPar <- function() {
   dev.new();
@@ -289,12 +289,12 @@ as.numeric.adv <- function(x) {
   }
 }
 
-# Converting a dataframe column to numeric ------
+# Converting a data frame column to numeric ------
 col2num <- function(df,column, use.names = FALSE){
   unlist(df[column], use.names = use.names)
 }
 
-# Converting classes of columns of dataframe -----------------------------------
+# Converting classes of columns of data frame -----------------------------------
 # `convertClass(obj = df, types = to.chr(fnin - fnic))`
 convertClass <- function(obj, types, date.origin = "1970-01-01"){
   # Input data is pure dataframe
@@ -371,13 +371,13 @@ summaryLM <- function(reg){
   return(out)
 }
 
-# Count occurance of a character in a string -----------------------------
+# Count occurrence of a character in a string -----------------------------
 # `char.count (string = "string", Char = "i")`
 char.count <- function(string, Char ="."){
   return(length(unlist(strsplit(string, Char, fixed = TRUE))) - 1)
 }
 
-# Add Path to filename ----------------------------------------------------
+# Add Path to file name ----------------------------------------------------
 # `getwd()`
 "%/%" = function(path, file) {
   if (substr(file, 1, 1) == "/") {
@@ -498,7 +498,7 @@ reset <- function(){
   invisible(resetPar())
 }
 
-# Concenate object as Text -------------------------------------------
+# Concatenate object as Text -------------------------------------------
 # `"a" %+% "b"`
 "%+%" = function(obj_1, obj_2) {
   paste(obj_1, obj_2, sep = "")
@@ -590,7 +590,7 @@ all.identical <- function(x, warn = FALSE) {
   }
 }
 
-# Stich (Collapse a vector of strings) ------------------------------------
+# Stitch (Collapse a vector of strings) ------------------------------------
 # `stich(vec, collapse = " ")`
 stitch <- function(vec, collapse = " "){
   paste0(as.character(vec), collapse = collapse)
@@ -602,7 +602,7 @@ rm.na <- function(vec){
   return(vec[!is.na(vec)])
 }
 
-# Merging two dataframe like mean +- sd -----------------------------------
+# Merging two data frame like mean +- sd -----------------------------------
 # `fuse(df.prfx, df.sufx, merged.Cols , link = "±")`
 fuse <- function(df.prfx, df.sufx, merged.Cols , link = "±"){
   # Checking no. of cols are identical
@@ -976,7 +976,7 @@ export2html <- function(filename, folder = '05-Html', suppress_warnings = TRUE, 
 # 1. Converts R-section to R markdown sections
 # 2. Converts normal comments to roxygen comments automatically
 # 3. Appends detailed output format
-r2html <- function(numbered_section = FALSE){
+r2html <- function(numbered_section = TRUE){
   invisible(install("dplyr"))
   file <- rstudioapi::getSourceEditorContext()$path
   flIn  <- readLines(file)
@@ -1015,7 +1015,10 @@ r2html <- function(numbered_section = FALSE){
     if (i %in% secLines) {
       flIn[i] <-  flIn[i] %>%
         gsub(pattern = "[-]+$", replacement = "", x = .) %>%
-        gsub(pattern = "^+# ", replacement =  "#' ## ", x = .)
+        gsub(pattern = "^+# ", replacement =  "#' # ", x = .) %>%
+        gsub(pattern = "^+## ", replacement =  "#' ## ", x = .) %>%
+        gsub(pattern = "^+### ", replacement =  "#' ### ", x = .) %>%
+        gsub(pattern = "^+#### ", replacement =  "#' #### ", x = .)
     } else if (i %in% comLines) {
       flIn[i] <-  flIn[i] %>%
         gsub(pattern = "^+# ", replacement = "#' ", x = .) %+% "<br>"
@@ -1340,3 +1343,5 @@ drop_unfit_rows <- function(data, ..., contains = c(""), na.rm = TRUE){
   }
   return(out)
 }
+
+
