@@ -399,7 +399,7 @@ char.count <- function(string, Char ="."){
 # Save data as csv file (no need to worry about path and extension) ------------
 # `write.csv.adv (data, file.name, path = getwd(), subfolder = "Output-Tables" )`
 write_csv.adv <- function(data, file.name, path = getwd(),
-                          subfolder = "03-Tables", quote = FALSE){
+                          subfolder = "03-Tables", quote = "none", ... ){
   install("readr")
   # if subfolder doesn't exist then create it.
   if (!file.exists(subfolder)) {
@@ -412,7 +412,7 @@ write_csv.adv <- function(data, file.name, path = getwd(),
   } else {
     file = gsub("(.csv)+$", ".csv", file.name)
   }
-  write_csv(data, path %/% subfolder %/% file, quote = quote)
+  write_csv(data, path %/% subfolder %/% file, quote = quote, ... )
 }
 
 # Saving session info to a txt file --------------------------------------------
