@@ -243,6 +243,42 @@ closePdf <- function(pdfname = "test", subfolder = "04-Graphics"){
   # opening pdf file
   system(paste0("open ", shQuote(subfolder %/% pdfname %+% " [R].pdf")))
 }
+# ggsave.adv ()---------------------------------------------------------------------------------------------
+ggsave.adv <- function(filename = "temp",
+                       prefix="99ZZ-99z-99",
+                       plot = last_plot(),
+                       asp.WbyH = 4/3,
+                       width = 8,
+                       height = NULL,
+                       ext = "svg"){
+  install("svglite")
+  subfolder = "04-Graphics"
+  path = getwd()
+  if (!file.exists(subfolder)) {
+    dir.create(file.path(path, subfolder))
+  }
+
+  if ((!is.null(asp.WbyH))+(!is.null(width))+(!is.null(height))==3) {
+    if (asp != height/width) {
+      errorCondition("aspect ratio and height/weight are not equal")
+    }
+  } else if (is.null(height)) {
+    height = width/asp.WbyH
+  } else if (is.null(width)) {
+    width = height*asp.WbyH
+  } else {
+    errorCondition("Please provide atleast two variables among height,
+                   width and aspect ratio")
+  }
+
+  for (type in ext) {
+    file <- prefix %+% "-" %+% filename %+% " [R]." %+% type
+    ggsave(filename = file, plot = plot,
+           width = width, height = height, unit = "cm",
+           path = subfolder, device = type)
+  }
+  system(paste0("open ", shQuote(subfolder %/% file)))
+}
 # Clear data or screen -------------------------------------------
 # `clr()`
 # `clr("all")`
