@@ -258,7 +258,7 @@ ggsave.adv <- function(filename = "temp",
     dir.create(file.path(path, subfolder))
   }
 
-  if ((!is.null(asp.WbyH))+(!is.null(width))+(!is.null(height))==3) {
+  if ((!is.null(asp.WbyH)) + (!is.null(width)) + (!is.null(height)) == 3) {
     if (asp != height/width) {
       errorCondition("aspect ratio and height/weight are not equal")
     }
@@ -1384,3 +1384,67 @@ drop_unfit_rows <- function(data, ..., contains = c(""), na.rm = TRUE){
 }
 
 
+# interpolate.y.vs.x() -----------------------------------------------------
+# A function to interpolate the x values given y is know.
+# Useful to extract values from a cumulative function, say 50%
+# when the exact value at 50% doesn't exist.
+interpolate.y.vs.x <- function(data, x.col, y.col, y.out = c(25, 50, 75)) {
+  x = data[ ,x.col] %>% unlist()
+  y = data[ ,y.col] %>% unlist()
+
+  # Check whether vector x and y are of same length
+  if (length(x) != length(y)) {
+    stop("x and y are not of same length!")
+  }
+
+  # Check whether both vectors (x, y) are sorted.
+  if (is.unsorted(x)) {
+    stop("x is not sorted!")
+  }
+  if (is.unsorted(y)) {
+    stop("y is not sorted!")
+  }
+
+  # Creating an empy data.frame to store values
+  out = data.frame(y = y.out, x = NA_real_)
+  names(out) <- c(y.col, x.col)
+
+  # Loop to go through each y.out values
+  for (i.y  in c(1:length(y.out))) {
+    y.int = y.out[i.y]
+
+    # Finding closest value to y.int
+    i = which(abs(y - y.int) == min(abs(y - y.int)))
+
+    # Handling cases where multiple i corresponding to same y.int exists
+    if (length(i) > 1 ) {
+      k = length(i)
+      i = round(median(i))
+    } else {
+      k = 1
+    }
+
+    # Considering range of i for the interpolation
+    i.l = i - k
+    i.h = i + k
+
+    if (y[i] == y.int) { # Case where there is an exact match
+      x.out = x[i]
+    } else {
+      if (i - k < 1) { # Case when i.l each zero or negative
+        x.out = x[i]
+        i.l = 1
+      } else if (i + k == length(x)) { # Case when i.h is more than the vector length
+        x.out = x[length(x)]
+        i.h = length(x)
+      } else {
+        xx = x[seq(i.l, i.h, 1)]
+        yy = y[seq(i.l, i.h, 1)]
+        val = approx(x = yy, y = xx, xout = y.int)
+        x.out = val$y
+      }
+    }
+    out[i.y, x.col] = x.out
+  }
+  return(out)
+}
