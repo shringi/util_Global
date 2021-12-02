@@ -224,7 +224,7 @@ export <- function(fname){
 # `openPdf(pdfname = "test")`
 # `closePdf(pdfname = "test")`
 
-openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "04-Graphics", path = getwd()) {
+openPdf <- function(pdfname = "test", width = 8.3, height = 11.7, subfolder = "04-Graphics", path = getwd()) {
   closeFigs()
   # Opening "test.pdf"
   if (!file.exists(subfolder)) {
@@ -232,7 +232,7 @@ openPdf <- function(pdfname = "test", width = 14, height = 9, subfolder = "04-Gr
   }
 
   pdfname <- subfolder %/% pdfname
-  {pdf(paste0(pdfname, " [R].pdf"), width = width, height = height, paper = "a4r",
+  {pdf(paste0(pdfname, " [R].pdf"), width = width, height = height, #paper = "a4r",
        onefile = T, bg = "white");
     dev.control("enable")}
 }
