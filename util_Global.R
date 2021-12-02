@@ -1175,12 +1175,12 @@ sketch <- function(figObj, prefix="99ZZ-99z-99", figname = "temp", ppt = FALSE, 
 # Saves a list of figures into a joint pdf or pptx file.
 export.list.of.figures <- function(figList, prefix = "99zz-99z-99", figname, pdf = TRUE, pptx = FALSE, ...){
   prefix.figname = prefix %+% "-" %+% figname
-  if(pdf){
+  if (pdf) {
     openPdf(pdfname = prefix.figname, ...)
   }
   figListName = substitute(figList)
   walk2(figList, names(figList), ~print.figure(figobj = .x, prefix = prefix, figname = figname, figObjName = .y, figList = figListName, pptx = pptx))
-  if(pdf){
+  if (pdf) {
     closePdf(pdfname = prefix.figname, ...)
   }
 }
@@ -1383,7 +1383,6 @@ drop_unfit_rows <- function(data, ..., contains = c(""), na.rm = TRUE){
   return(out)
 }
 
-
 # interpolate.y.vs.x() -----------------------------------------------------
 # A function to interpolate the x values given y is know.
 # Useful to extract values from a cumulative function, say 50%
@@ -1447,4 +1446,26 @@ interpolate.y.vs.x <- function(data, x.col, y.col, y.out = c(25, 50, 75)) {
     out[i.y, x.col] = x.out
   }
   return(out)
+}
+# resize.ggplot.panel() ---------------------------------------------------
+# Function to precisely size the actual grid panel of a ggplot, irrespective of
+# size of axes labels and titles
+# here p is the ggplot figure object
+# Usage
+# fig = ggplot(cars, aes(speed, dist)) +
+#   geom_point()
+# plot(fig)
+# fig.resized = resize.ggplot.panel(p = fig, width = unit(10, "cm"), height = unit(10, "cm"))
+# grid::grid.newpage()
+# grid::grid.draw(fig.resized)
+
+resize.ggplot.panel = function(p = NULL, g = ggplotGrob(p),
+                                 width = unit(15, "cm"), height = unit(15, "cm")){
+  install("grid")
+  panel_index_w <- g$layout$l[g$layout$name == "panel"]
+  panel_index_h <- g$layout$t[g$layout$name == "panel"]
+  g$widths[[panel_index_w]] <- width
+  g$heights[[panel_index_h]] <- height
+  class(g) <- c("fixed", class(g), "ggplot")
+  return(g)
 }
