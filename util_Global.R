@@ -282,7 +282,7 @@ ggsave.adv <- function(filename = "temp",
 # Clear data or screen -------------------------------------------
 # `clr()`
 # `clr("all")`
-clr <- function(mode="notall", except = NULL, env = environment()) {
+clr <- function(mode="notall", except = NULL, env = globalenv()) {
   # env <- globalenv()
   ll <- ls(envir = env)
 
