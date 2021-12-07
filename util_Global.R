@@ -1469,3 +1469,22 @@ resize.ggplot.panel = function(p = NULL, g = ggplotGrob(p),
   class(g) <- c("fixed", class(g), "ggplot")
   return(g)
 }
+
+# %<% ---------------------------------------------------------------------
+# Adding a variable to a list with the same name
+# Usage
+# t = list()
+# df = data.frame(a = 1, b = 2)
+# t %<% df
+# View(t)
+"%<%" <- function(t, v) {
+  if (class(t) != "list") {
+    stop("left to '%<%' should be a list!")
+  } else {
+    var = deparse(substitute(v))
+    t[[var]] <<- v
+  }
+  return(invisible(t))
+}
+
+
