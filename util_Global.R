@@ -1470,9 +1470,18 @@ resize.ggplot.panel = function(p = NULL, g = ggplotGrob(p),
   return(g)
 }
 
+# as.is() -----------------------------------------------------------------
+# Returns the argument of a function as character
+# Usage:
+# a = 1
+# as.is(a)
+as.is <- function(x, ...){
+  deparse(substitute(expr = x, env = ..1))
+}
+
 # %<% ---------------------------------------------------------------------
 # Adding a variable to a list with the same name
-# Usage
+# Usage:
 # t = list()
 # df = data.frame(a = 1, b = 2)
 # t %<% df
@@ -1481,7 +1490,7 @@ resize.ggplot.panel = function(p = NULL, g = ggplotGrob(p),
   if (class(t) != "list") {
     stop("left to '%<%' should be a list!")
   } else {
-    var = deparse(substitute(v))
+    var = as.is(v)
     t[[var]] <<- v
   }
   return(invisible(t))
