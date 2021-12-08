@@ -1496,4 +1496,37 @@ as.is <- function(x, ...){
   return(invisible(t))
 }
 
+# str.list() --------------------------------------------------------
+# Function to see list structure (names only) in a form of a tree.
+str.list <- function(X,
+                     prefix1 = "",
+                     prefix2 = "",
+                     prefix3 = "",
+                     prefix4 = "", a =1) {
+  # Box symbols key
+  # "\U2500" :  ─
+  # "\U2502" :  │
+  # "\U251C" :  ├
+  # "\U2514" :  └
+  if (a == 1) {
+    var = as.is(X)
+    cat(var,"\n", "\U2502", sep = "")
+    Y = list()
+    Y[[1]] = X
+  }
+
+  if (is.list(Y))
+    for (i in seq_along(Y) ) {
+      cat(if (i < length(Y)) prefix1 else prefix3, names(Y)[i], "\n", sep = "" )
+      prefix <- if (i < length(Y) ) prefix2 else prefix4
+      nametree(
+        Y[[i]],
+        paste0(prefix, "\U251C\U2500"), #"├─"
+        paste0(prefix, "\U2502 "),      #"│ "
+        paste0(prefix, "\U2514\U2500"), #"└─"
+        paste0(prefix, "  "),           #"  "
+        a = 2
+      )
+    }
+}
 
