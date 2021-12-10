@@ -695,7 +695,7 @@ fuse <- function(df.prfx, df.sufx, merged.Cols , link = "±"){
 # `mov.avg(x, width, align = "center", partial = FALSE, na.rm = FALSE )`
 mov.avg <- function(x, width, align = "center", partial = FALSE, na.rm = FALSE ) {
   # Installing zoo
-    install("zoo")
+  install("zoo")
   out <- rollapply(data = x, width = width, FUN = mean, na.rm = na.rm, align = align, fill = NA, partial = partial)
   return(out)
 }
@@ -1007,7 +1007,7 @@ export2html <- function(filename, folder = '05-Html', suppress_warnings = TRUE,
       stop("Corresponding html file doesnt exists!!")
     }
   }
- rm(env_new)
+  rm(env_new)
 }
 # r2html -------------------------------------------------------------------------------------------------
 # Funtion which converts normal R code into a rmarkdown code. There already exists some implementation, for example see <https://rmarkdown.rstudio.com/articles_report_from_r_script.html> for more details.
@@ -1337,11 +1337,11 @@ get.empty.columns <- function(data, group.cols) {
     dplyr::filter(empty.any > 0) %>%
     dplyr::select(-empty.any) %>%
     mutate(across(matches(setdiff(names(.),text)), ~if_else(.,"X","")))
-    if (dim(out)[1] > 0) {
-      print(kable(out, format = "rst"))
-    } else {
-      catn("There are no empty columns")
-    }
+  if (dim(out)[1] > 0) {
+    print(kable(out, format = "rst"))
+  } else {
+    catn("There are no empty columns")
+  }
 }
 
 # drop_unfit_cols() ------------------------------------------------------------------------------------------
@@ -1460,7 +1460,7 @@ interpolate.y.vs.x <- function(data, x.col, y.col, y.out = c(25, 50, 75)) {
 # grid::grid.draw(fig.resized)
 
 resize.ggplot.panel = function(p = NULL, g = ggplotGrob(p),
-                                 width = unit(15, "cm"), height = unit(15, "cm")){
+                               width = unit(15, "cm"), height = unit(15, "cm")){
   install("grid")
   panel_index_w <- g$layout$l[g$layout$name == "panel"]
   panel_index_h <- g$layout$t[g$layout$name == "panel"]
@@ -1475,10 +1475,13 @@ resize.ggplot.panel = function(p = NULL, g = ggplotGrob(p),
 # Usage:
 # a = 1
 # as.is(a)
-as.is <- function(x, ...){
-  deparse(substitute(expr = x, env = ..1))
+as.is <- function(x, ...) {
+  if (...length() > 0) {
+    deparse(substitute(expr = x, env = ...))
+  } else {
+    deparse(substitute(expr = x))
+  }
 }
-
 # %<% ---------------------------------------------------------------------
 # Adding a variable to a list with the same name
 # Usage:
