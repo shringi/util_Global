@@ -1470,18 +1470,6 @@ resize.ggplot.panel = function(p = NULL, g = ggplotGrob(p),
   return(g)
 }
 
-# as.is() -----------------------------------------------------------------
-# Returns the argument of a function as character
-# Usage:
-# a = 1
-# as.is(a)
-as.is <- function(x, ...) {
-  if (...length() > 0) {
-    deparse(substitute(expr = x, env = ...))
-  } else {
-    deparse(substitute(expr = x))
-  }
-}
 # %<% ---------------------------------------------------------------------
 # Adding a variable to a list with the same name
 # Usage:
@@ -1490,13 +1478,10 @@ as.is <- function(x, ...) {
 # t %<% df
 # View(t)
 "%<%" <- function(t, v) {
-  if (class(t) != "list") {
-    stop("left to '%<%' should be a list!")
-  } else {
-    var = as.is(v)
-    t[[var]] <<- v
-  }
-  return(invisible(t))
+  var = deparse(substitute(v, current_env()))
+  t.name = deparse(substitute(t, current_env()))
+  eval(parse(text = paste0(t.name,"[['",var,"']]","=", var)), envir = global_env())
+  return(invisible())
 }
 
 # str.list() --------------------------------------------------------
@@ -1512,17 +1497,19 @@ str.list <- function(X,
   # "\U251C" :  ├
   # "\U2514" :  └
   if (a == 1) {
-    var = as.is(X)
-    cat(var,"\n", "\U2502", sep = "")
+    var = deparse(substitute(X))
+    cat(var)#,"\n")#, "\U2502", sep = "")
     Y = list()
     Y[[1]] = X
+  } else {
+    Y = X
   }
 
   if (is.list(Y))
     for (i in seq_along(Y) ) {
       cat(if (i < length(Y)) prefix1 else prefix3, names(Y)[i], "\n", sep = "" )
       prefix <- if (i < length(Y) ) prefix2 else prefix4
-      nametree(
+      str.list(
         Y[[i]],
         paste0(prefix, "\U251C\U2500"), #"├─"
         paste0(prefix, "\U2502 "),      #"│ "
