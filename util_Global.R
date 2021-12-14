@@ -1520,3 +1520,31 @@ str.list <- function(X,
     }
 }
 
+# get.file.prefix() -------------------------------------------------------
+# Extracts prefix (ex.01aa) of custom file names such as "01aa-script.R"
+get.file.prefix <- function(file, subfix = "_") {
+  nn = substr(file, 1, 2) |>
+    as.numeric() |>
+    is.na() |>
+    isFALSE() |>
+    suppressWarnings()
+
+  tt = substr(file, 3, 4) |>
+    as.numeric() |>
+    is.na() |>
+    isTRUE() |>
+    suppressWarnings()
+
+  if (nn & tt) {
+    prefix = substr(file, 1, 4)
+  } else {
+    prefix = NA
+  }
+  if (is.na(prefix)) {
+    prefix = ""
+  } else {
+    prefix = prefix %+% suffix
+  }
+  return(prefix)
+}
+
