@@ -1548,3 +1548,10 @@ get.file.prefix <- function(file, subfix = "_") {
   return(prefix)
 }
 
+# get.source.file.name() --------------------------------------------------
+# get current active source file name
+get.source.file.name <- function() {
+  rev(strsplit(rstudioapi::getSourceEditorContext()$path,
+               split = "/")[[1]])[1]
+}
+
