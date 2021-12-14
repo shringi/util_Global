@@ -542,22 +542,28 @@ reset <- function(){
 # cat() that appends a newline ---------------------------------------
 # `catn(..., file = "", sep = " ", fill = FALSE, labels = NULL, append = FALSE)`
 catn = function(..., file = "", sep = " ", fill = FALSE, labels = NULL,
-                append = FALSE, console = TRUE, color = NULL) {
+                append = FALSE, console = TRUE, color = NULL,
+                newline = TRUE) {
+  if (newline) {
+    n = '\n'
+  } else {
+    n = ""
+  }
+
   if (console) {
     if (!is.null(color)) {
       install("crayon")
 
-      eval(expr = parse(text = "cat(" %+% color %+% "(" %+% quote(...) %+% "),'\n')"))
+      eval(expr = parse(text = "cat(" %+% color %+% "(" %+% quote(...) %+% "),'" %+% n %+% "')"))
     } else (
-      cat(..., "\n", file = file, sep = sep, fill = fill, labels = labels,
+      cat(..., n, file = file, sep = sep, fill = fill, labels = labels,
           append = append)
     )
   }
   if (file != "") {
-    cat(..., "\n", file = file, sep = sep, fill = fill, labels = labels,
+    cat(..., n, file = file, sep = sep, fill = fill, labels = labels,
         append = append)
   }
-
 }
 # List objects available in the environment-------------------------------------
 # `list.objects(env = .GlobalEnv)`
@@ -1550,6 +1556,8 @@ get.file.prefix <- function(file, subfix = "_") {
 
 # get.source.file.name() --------------------------------------------------
 # get current active source file name
+# Ex. get.source.file.name()
+# [1] util_Global.R
 get.source.file.name <- function() {
   rev(strsplit(rstudioapi::getSourceEditorContext()$path,
                split = "/")[[1]])[1]
