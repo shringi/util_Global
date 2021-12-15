@@ -1580,7 +1580,8 @@ get.source.file.name <- function() {
 
 store.table <- function(filename, data, lt, check = T,
                         subfolder = "03-Tables",
-                        console = FALSE) {
+                        console = FALSE,
+                        envir = rlang::caller_env()) {
   install("rlang")
 
   # Extracting names of the data and the list
@@ -1658,8 +1659,8 @@ store.table <- function(filename, data, lt, check = T,
   if (write) {
     lt1 = paste0(lt.name, "$tables[['", table.name, "']]")
 
-    eval(parse(text = paste0(lt1, "= list()")))
-    eval(parse(text = paste0(lt1, " %<% ", data.name)))
+    eval(parse(text = paste0(lt1, "= list()")), envir = envir)
+    eval(parse(text = paste0(lt1, " %<% ", data.name)), envir = envir)
 
     # Case when data needs to be overwritten
     if (compare) {
@@ -1678,7 +1679,7 @@ store.table <- function(filename, data, lt, check = T,
       catn("    Saving:", color = "blue", newline = F, console = console)
       catn(filename.n, color = "green", console = console)
       write_csv.adv(data, file.name = filename.n)
-      eval(parse(text = "save(" %+% lt.name %+% ", file = '" %+% stored.list.file.name %+% "')"))
+      eval(parse(text = "save(" %+% lt.name %+% ", file = '" %+% stored.list.file.name %+% "', envir = envir)"))
     }
   }
   return(invisible())
