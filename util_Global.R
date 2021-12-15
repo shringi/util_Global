@@ -1486,7 +1486,7 @@ resize.ggplot.panel = function(p = NULL, g = ggplotGrob(p),
 "%<%" <- function(t, v) {
   var = deparse(substitute(v, current_env()))
   t.name = deparse(substitute(t, current_env()))
-  eval(parse(text = paste0(t.name,"[['",var,"']]","=", var)), envir = global_env())
+  eval(parse(text = paste0(t.name,"[['",var,"']]","=", var)), envir = parent.frame())
   return(invisible())
 }
 
@@ -1528,7 +1528,7 @@ str.list <- function(X,
 
 # get.file.prefix() -------------------------------------------------------
 # Extracts prefix (ex.01aa) of custom file names such as "01aa-script.R"
-get.file.prefix <- function(file, subfix = "_") {
+get.file.prefix <- function(file = get.source.file.name(), suffix = "_") {
   nn = substr(file, 1, 2) |>
     as.numeric() |>
     is.na() |>
