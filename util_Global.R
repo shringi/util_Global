@@ -1194,7 +1194,7 @@ export.list.of.figures <- function(figList, prefix = "99zz-99z-99", figname, pdf
 # Function to interpolate the values by fitting a smooth spline
 interpolate <- function(x, y, df, y_per, graph = FALSE){
   temp <- data.frame(x = x, y = y) %>%
-    filter(complete.cases(.)) %>%
+    dplyr::filter(complete.cases(.)) %>%
     group_by(x) %>%
     summarise(y = mean(y, na.rm = TRUE)) %>%
     arrange(x)
@@ -1394,13 +1394,18 @@ drop_unfit_rows <- function(data, ..., contains = c(""), na.rm = TRUE){
 # Useful to extract values from a cumulative function, say 50%
 # when the exact value at 50% doesn't exist.
 interpolate.y.vs.x <- function(data, x.col, y.col, y.out = c(25, 50, 75)) {
-  data = data |> filter(!is.na(get(x.col)), is.na(get(y.col)))
+  data = data |> dplyr::filter(!is.na(get(x.col)), !is.na(get(y.col)))
   x = data[ ,x.col] %>% unlist()
   y = data[ ,y.col] %>% unlist()
 
+  # Creating an empty data.frame to store values
+  out = data.frame(y = y.out, x = NA_real_)
+  names(out) <- c(y.col, x.col)
+
   # Case when one of the column is all NA
   if (all(is.na(x)) | all(is.na(y)) | length(x)*length(y) == 0) {
-    return(NA)
+    out[,x.col] = NA_real_
+    return(out)
     exit()
   }
 
@@ -1419,9 +1424,6 @@ interpolate.y.vs.x <- function(data, x.col, y.col, y.out = c(25, 50, 75)) {
     stop("y is not sorted!")
   }
 
-  # Creating an empy data.frame to store values
-  out = data.frame(y = y.out, x = NA_real_)
-  names(out) <- c(y.col, x.col)
 
   # Loop to go through each y.out values
   for (i.y  in c(1:length(y.out))) {
