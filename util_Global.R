@@ -1394,8 +1394,17 @@ drop_unfit_rows <- function(data, ..., contains = c(""), na.rm = TRUE){
 # Useful to extract values from a cumulative function, say 50%
 # when the exact value at 50% doesn't exist.
 interpolate.y.vs.x <- function(data, x.col, y.col, y.out = c(25, 50, 75)) {
+  data = data |> filter(!is.na(get(x.col)), is.na(get(y.col)))
   x = data[ ,x.col] %>% unlist()
   y = data[ ,y.col] %>% unlist()
+
+  # Case when one of the column is all NA
+  if (all(is.na(x)) | all(is.na(y)) | length(x)*length(y) == 0) {
+    return(NA)
+    exit()
+  }
+
+  # Removing
 
   # Check whether vector x and y are of same length
   if (length(x) != length(y)) {
