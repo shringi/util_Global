@@ -1628,14 +1628,14 @@ store.table <- function(filename, data, lt, check = T,
 
   # Checking
   # 1. Whether a list exists if not create.
-  # 2. Check whther we already have the data with the same name in the list l
+  # 2. Check whether we already have the data with the same name in the list l
   if (is.null(names(lt)) || any("tables" != names(lt))) {
     lt$tables = list()
     catn("    Existing list doesn't contain the table!",
          color = "blue", console = console)
   }
 
-  file.index = grepl(filename, names(lt$tables))
+  file.index = filename == names(lt$tables)
 
   if (any(file.index)) {
     # Case when table name exists
