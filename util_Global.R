@@ -435,7 +435,7 @@ char.count <- function(string, Char ="."){
 # Save data as csv file (no need to worry about path and extension) ------------
 # `write.csv.adv (data, file.name, path = getwd(), subfolder = "Output-Tables" )`
 write_csv.adv <- function(data, file.name, path = getwd(),
-                          subfolder = "03-Tables", quote = "none", ... ){
+                          subfolder = "03-Tables", quote = "none", fun_family = "csv", ... ){
   install("readr")
   # if subfolder doesn't exist then create it.
   if (!file.exists(subfolder)) {
@@ -448,7 +448,17 @@ write_csv.adv <- function(data, file.name, path = getwd(),
   } else {
     file = gsub("(.csv)+$", ".csv", file.name)
   }
-  write_csv(data, path %/% subfolder %/% file, quote = quote, ... )
+  if (fun_family == "csv") {
+    write_csv(x = data, file = path %/% subfolder %/% file, quote = quote, ... )
+  } else if (fun_family == "csv2") {
+    write_csv2(x = data, file = path %/% subfolder %/% file, quote = quote, ... )
+  } else if (fun_family == "excel_csv") {
+    write_excel_csv(x = data, file = path %/% subfolder %/% file, quote = quote, ... )
+  } else if (fun_family == "excel_csv2") {
+    write_excel_csv2(x = data, file = path %/% subfolder %/% file, quote = quote, ... )
+  } else {
+    stop("Please provide fun_family parameter from 'csv', `csv2`, `excel_csv`, `excel_csv2` only!")
+  }
 }
 
 # Saving session info to a txt file --------------------------------------------
@@ -1592,7 +1602,9 @@ get.source.file.name <- function() {
 store.table <- function(filename, data, lt, check = T,
                         subfolder = "03-Tables",
                         console = FALSE,
-                        envir = rlang::caller_env()) {
+                        fun_family = "csv",
+                        envir = rlang::caller_env(),
+                        ...) {
   install("rlang")
 
   # Extracting names of the data and the list
@@ -1689,7 +1701,10 @@ store.table <- function(filename, data, lt, check = T,
     } else {
       catn("    Saving:", color = "blue", newline = F, console = console)
       catn(filename.n, color = "green", console = console)
-      write_csv.adv(data, file.name = filename.n)
+      write_csv.adv(data = data,
+                    file.name = filename.n,
+                    fun_family = fun_family,
+                    ...)
       eval(parse(text = "save(" %+% lt.name %+% ", file = '" %+% stored.list.file.name %+% "', envir = envir)"))
     }
   }
