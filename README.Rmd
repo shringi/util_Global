@@ -48,6 +48,7 @@ The following functions are implemented (broad category wise)
 - `catn` : cat() function with new line already attached in the end.
 - `hr`
 - `print.warn`
+- `str.list`
 ### Productivity
 ### Summary
 - `get.empty.columns`: Get empty columns (NA or blank) in a data.frame
@@ -170,6 +171,23 @@ df
 df %>% get.empty.columns()
 
 rbind(df, df) %>% get.empty.columns(data = ., group.cols = c1)
+```
+
+### str.list()
+str.list() command is used to display an internal structure of a list in a visual tree form on the console.
+
+#### syntax
+```
+str.list(X, prefix1 = "", prefix2 = "", prefix3 = "", prefix4 = "", a =1)
+```
+#### usage
+```{r}
+l = list()
+df <- data.frame(a = 1:10, b = 11:20)
+l$data$df1 <- df
+l$data$df2 <- df
+l$plots$figure <- ggplot(df, aes(a, b)) + geom_point()
+str.list(l)
 ```
 
 # Scripts

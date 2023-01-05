@@ -1,4 +1,4 @@
-Util\_Global.R
+Util_Global.R
 ================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -31,13 +31,13 @@ The following functions are implemented (broad category wise)
 
 ### Calculations
 
-  - `interpolate`
-  - `max.adv`
-  - `min.adv`
-  - `sum.adv`
-  - `mov.avg`
-  - `mov.sd`
-  - `rm.na`
+- `interpolate`
+- `max.adv`
+- `min.adv`
+- `sum.adv`
+- `mov.avg`
+- `mov.sd`
+- `rm.na`
 
 ### Graphics
 
@@ -47,8 +47,8 @@ The following functions are implemented (broad category wise)
 
 #### Objects
 
-  - `clr` : Remove variables from the environment
-  - `reset`
+- `clr` : Remove variables from the environment
+- `reset`
 
 ### Manipulation
 
@@ -56,19 +56,20 @@ The following functions are implemented (broad category wise)
 
 ### Print
 
-  - `catn` : cat() function with new line already attached in the end.
-  - `hr`
-  - `print.warn` \#\#\# Productivity \#\#\# Summary
-  - `get.empty.columns`: Get empty columns (NA or blank) in a data.frame
-  - `stat.summary`
-  - `summary.adv`
-  - `summary.non.num`
-  - `summary.num`
-  - `summaryLM`
+- `catn` : cat() function with new line already attached in the end.
+- `hr`
+- `print.warn`
+- `str.list` \### Productivity \### Summary
+- `get.empty.columns`: Get empty columns (NA or blank) in a data.frame
+- `stat.summary`
+- `summary.adv`
+- `summary.non.num`
+- `summary.num`
+- `summaryLM`
 
 # Installation
 
-Just download the **util\_Global.R** file.
+Just download the **util_Global.R** file.
 
 ``` r
 source("util_Global.R")
@@ -85,7 +86,7 @@ Source it locally and you are good to go.
 ### clr()
 
 clr() is motivated from Matlab function `clr` Its an advance and short
-way of writing `rm(list = ls())` \#\#\#\# syntax
+way of writing `rm(list = ls())` \#### syntax
 
     clr(mode = "notall", except = NULL)
 
@@ -100,13 +101,13 @@ clr( except = "temp")
 ```
 
 ``` r
-# To clean everyhing except function clr(), and clc()
+# To clean everything except function clr(), and clc()
 clr("all")
 ```
 
-### drop\_unfit\_cols(), drop\_unfit\_rows()
+### drop_unfit_cols(), drop_unfit_rows()
 
-Select out columns/rows based on unfit values \#\#\#\# syntax
+Select out columns/rows based on unfit values \#### syntax
 
 ``` r
 drop_unfit_cols(data, ..., contains = "", na.rm = TRUE)
@@ -124,35 +125,35 @@ df <- tibble(c1 = c("a", "", "c", "d", NA, "f", "g", "h"),
              c7 = c("#Value!", "", "", "#Value!", NA, "#Value!", "", "#Value!"), 
              c8 = c(-99, NA, -99, NA, NA, NA, -99, NA))
 df
-## # A tibble: 8 x 8
+## # A tibble: 8 × 8
 ##   c1       c2 c3        c4          c5 c6    c7           c8
 ##   <chr> <dbl> <chr>     <lgl>    <dbl> <chr> <chr>     <dbl>
 ## 1 "a"      NA "A"       NA       0.001 ""    "#Value!"   -99
 ## 2 ""       NA ""        NA      NA     ""    ""           NA
 ## 3 "c"       3 "C"       NA     -99     ""    ""          -99
 ## 4 "d"       4 "D"       NA       1     ""    "#Value!"    NA
-## 5  <NA>    NA  <NA>     NA      NA     ""     <NA>        NA
+## 5 <NA>     NA  <NA>     NA      NA     ""     <NA>        NA
 ## 6 "f"       6 "#Value!" NA      NA     ""    "#Value!"    NA
 ## 7 "g"       7 "G"       NA    1000     ""    ""          -99
-## 8 "h"       8 "H"       NA      NA      <NA> "#Value!"    NA
+## 8 "h"       8 "H"       NA      NA     <NA>  "#Value!"    NA
 
 # Filterning blank or NA filled columns
 df %>% drop_unfit_cols()
-## # A tibble: 8 x 6
+## # A tibble: 8 × 6
 ##   c1       c2 c3              c5 c7           c8
 ##   <chr> <dbl> <chr>        <dbl> <chr>     <dbl>
 ## 1 "a"      NA "A"          0.001 "#Value!"   -99
 ## 2 ""       NA ""          NA     ""           NA
 ## 3 "c"       3 "C"        -99     ""          -99
 ## 4 "d"       4 "D"          1     "#Value!"    NA
-## 5  <NA>    NA  <NA>       NA      <NA>        NA
+## 5 <NA>     NA  <NA>       NA      <NA>        NA
 ## 6 "f"       6 "#Value!"   NA     "#Value!"    NA
 ## 7 "g"       7 "G"       1000     ""          -99
 ## 8 "h"       8 "H"         NA     "#Value!"    NA
 
 # Filterning blank or NA filled rows
 df %>% drop_unfit_rows()
-## # A tibble: 6 x 8
+## # A tibble: 6 × 8
 ##   c1       c2 c3      c4          c5 c6    c7           c8
 ##   <chr> <dbl> <chr>   <lgl>    <dbl> <chr> <chr>     <dbl>
 ## 1 a        NA A       NA       0.001 ""    "#Value!"   -99
@@ -160,25 +161,25 @@ df %>% drop_unfit_rows()
 ## 3 d         4 D       NA       1     ""    "#Value!"    NA
 ## 4 f         6 #Value! NA      NA     ""    "#Value!"    NA
 ## 5 g         7 G       NA    1000     ""    ""          -99
-## 6 h         8 H       NA      NA      <NA> "#Value!"    NA
+## 6 h         8 H       NA      NA     <NA>  "#Value!"    NA
 
 # Filterning blank or NA filled columns from a column range
 df %>% drop_unfit_cols(c3:c8)
-## # A tibble: 8 x 6
+## # A tibble: 8 × 6
 ##   c1       c2 c3              c5 c7           c8
 ##   <chr> <dbl> <chr>        <dbl> <chr>     <dbl>
 ## 1 "a"      NA "A"          0.001 "#Value!"   -99
 ## 2 ""       NA ""          NA     ""           NA
 ## 3 "c"       3 "C"        -99     ""          -99
 ## 4 "d"       4 "D"          1     "#Value!"    NA
-## 5  <NA>    NA  <NA>       NA      <NA>        NA
+## 5 <NA>     NA  <NA>       NA      <NA>        NA
 ## 6 "f"       6 "#Value!"   NA     "#Value!"    NA
 ## 7 "g"       7 "G"       1000     ""          -99
 ## 8 "h"       8 "H"         NA     "#Value!"    NA
 
 # Filterning blank or NA filled rows from a column range
 df %>% drop_unfit_rows(c3:c8)
-## # A tibble: 6 x 8
+## # A tibble: 6 × 8
 ##   c1       c2 c3      c4          c5 c6    c7           c8
 ##   <chr> <dbl> <chr>   <lgl>    <dbl> <chr> <chr>     <dbl>
 ## 1 a        NA A       NA       0.001 ""    "#Value!"   -99
@@ -186,32 +187,32 @@ df %>% drop_unfit_rows(c3:c8)
 ## 3 d         4 D       NA       1     ""    "#Value!"    NA
 ## 4 f         6 #Value! NA      NA     ""    "#Value!"    NA
 ## 5 g         7 G       NA    1000     ""    ""          -99
-## 6 h         8 H       NA      NA      <NA> "#Value!"    NA
+## 6 h         8 H       NA      NA     <NA>  "#Value!"    NA
 
 # Filtering selected or NA filled columns from a column range
 df %>% drop_unfit_cols(c3:c8, contains = list("", "#Value!", -99))
-## # A tibble: 8 x 4
+## # A tibble: 8 × 4
 ##   c1       c2 c3              c5
 ##   <chr> <dbl> <chr>        <dbl>
 ## 1 "a"      NA "A"          0.001
 ## 2 ""       NA ""          NA    
 ## 3 "c"       3 "C"        -99    
 ## 4 "d"       4 "D"          1    
-## 5  <NA>    NA  <NA>       NA    
+## 5 <NA>     NA  <NA>       NA    
 ## 6 "f"       6 "#Value!"   NA    
 ## 7 "g"       7 "G"       1000    
 ## 8 "h"       8 "H"         NA
 
 # Filtering selected or NA filled rows from a column range
 df %>% drop_unfit_rows(c3:c8, contains = list("", "#Value!", -99))
-## # A tibble: 5 x 8
+## # A tibble: 5 × 8
 ##   c1       c2 c3    c4          c5 c6    c7           c8
 ##   <chr> <dbl> <chr> <lgl>    <dbl> <chr> <chr>     <dbl>
 ## 1 a        NA A     NA       0.001 ""    "#Value!"   -99
 ## 2 c         3 C     NA     -99     ""    ""          -99
 ## 3 d         4 D     NA       1     ""    "#Value!"    NA
 ## 4 g         7 G     NA    1000     ""    ""          -99
-## 5 h         8 H     NA      NA      <NA> "#Value!"    NA
+## 5 h         8 H     NA      NA     <NA>  "#Value!"    NA
 ```
 
 ### install()
@@ -220,9 +221,9 @@ loading packages every now or then you require a package to run before
 you can use some R code you found online. Its typically starts with
 loading a `library()` or `require()`. For example
 
-If “package\_name” is already install then you are good to go, however
-if it is not installed (which is the case sometimes), then you will get
-an error as following-
+If “package_name” is already install then you are good to go, however if
+it is not installed (which is the case sometimes), then you will get an
+error as following-
 
 ``` pseudocode
 Error in library("package_name") : 
@@ -247,7 +248,7 @@ install("tidyverse")
 cat() command is used to display a message on console or in a file.
 catn() adds a new line in the end for convenience. Also this function
 adds the functionality of adding the color and an argument to when or
-when not to print. \#\#\#\# syntax
+when not to print. \#### syntax
 
     catn(..., file = "", sep = " ", fill = FALSE, labels = NULL, append = FALSE, console = TRUE, color = NULL)
 
@@ -274,17 +275,17 @@ summary of such sort. (In the outputs `X` represents an empty column)
 
 ``` r
 df
-## # A tibble: 8 x 8
+## # A tibble: 8 × 8
 ##   c1       c2 c3        c4          c5 c6    c7           c8
 ##   <chr> <dbl> <chr>     <lgl>    <dbl> <chr> <chr>     <dbl>
 ## 1 "a"      NA "A"       NA       0.001 ""    "#Value!"   -99
 ## 2 ""       NA ""        NA      NA     ""    ""           NA
 ## 3 "c"       3 "C"       NA     -99     ""    ""          -99
 ## 4 "d"       4 "D"       NA       1     ""    "#Value!"    NA
-## 5  <NA>    NA  <NA>     NA      NA     ""     <NA>        NA
+## 5 <NA>     NA  <NA>     NA      NA     ""     <NA>        NA
 ## 6 "f"       6 "#Value!" NA      NA     ""    "#Value!"    NA
 ## 7 "g"       7 "G"       NA    1000     ""    ""          -99
-## 8 "h"       8 "H"       NA      NA      <NA> "#Value!"    NA
+## 8 "h"       8 "H"       NA      NA     <NA>  "#Value!"    NA
 
 df %>% get.empty.columns()
 ## [1] "knitr not loaded."
@@ -315,14 +316,60 @@ rbind(df, df) %>% get.empty.columns(data = ., group.cols = c1)
 ## ===  ===  ===  ===  ===  ===  ===  ===
 ```
 
+### str.list()
+
+str.list() command is used to display an internal structure of a list in
+a visual tree form on the console.
+
+#### syntax
+
+    str.list(X, prefix1 = "", prefix2 = "", prefix3 = "", prefix4 = "", a =1)
+
+#### usage
+
+``` r
+l = list()
+df <- data.frame(a = 1:10, b = 11:20)
+l$data$df1 <- df
+l$data$df2 <- df
+l$plots$figure <- ggplot(df, aes(a, b)) + geom_point()
+str.list(l)
+## l
+## ├─data
+## │ ├─df1
+## │ │ ├─a
+## │ │ └─b
+## │ └─df2
+## │   ├─a
+## │   └─b
+## └─plots
+##   └─figure
+##     ├─data
+##     │ ├─a
+##     │ └─b
+##     ├─layers
+##     │ └─
+##     ├─scales
+##     ├─mapping
+##     │ ├─x
+##     │ └─y
+##     ├─theme
+##     ├─coordinates
+##     ├─facet
+##     ├─plot_env
+##     └─labels
+##       ├─x
+##       └─y
+```
+
 # Scripts
 
-## **util\_Global.R**
+## **util_Global.R**
 
 This is the main scripts which hosts all the custom functions. A list of
 function and their usage are mentioned below.
 
-## util\_Global\_Archived.R
+## util_Global_Archived.R
 
 All the functions, which I no longer use, or found a way around are
 shifted here.
@@ -337,7 +384,7 @@ information about RStudio Snippets from
 
 # Feedback
 
-  - Please feel free to raise a issue on github if you are find a bug,
-    typo or suggest a feature.
-  - If you come across functions which supersedes any of functions
-    presented here then please let me know by raising an issue.
+- Please feel free to raise a issue on github if you are find a bug,
+  typo or suggest a feature.
+- If you come across functions which supersedes any of functions
+  presented here then please let me know by raising an issue.
