@@ -362,6 +362,31 @@ str.list(l)
 ##       └─y
 ```
 
+### store.table()
+
+Command to save csv file and .Rdata with semi-automatic name in a
+predefined folder.
+
+#### syntax
+
+    store.table(filename, data, lt, check = T, subfolder = "03-Tables", console = FALSE, fun_family = "csv", envir = rlang::caller_env(), ...)
+
+#### usage
+
+``` r
+l = list()
+df <- data.frame(a = 1:10, b = 11:20)
+l$data$df1 <- df
+l$data$df2 <- df
+store.table(filename = "test", data = df, lt = l)
+## [1] "rlang not loaded."
+## [1] "rlang is already installed!"
+## [1] "rlang has been loaded now."
+
+# Following files will be stored in the folder named as `03-Folder`
+# `01_test_[R].csv` `util_Global.Rdata`
+```
+
 # Scripts
 
 ## **util_Global.R**
