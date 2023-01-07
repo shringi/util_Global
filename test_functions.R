@@ -1,97 +1,126 @@
-install("tidyverse")
-store.table <- function(prefix, filename, data, lt, check = T,
-                        subfolder = "03-Tables") {
+# store.figure() -----------------------------------------------------------
+# This is custom figure saving (with sequential file naming) only if the changes exists.
+# Usage:
+# l = list()
+# df = data.frame(x = 1 , y = 1)
+# store.figure(filename = "Test", data = df, lt = l, console = T)
+# store.figure(filename = "Test", data = df, lt = l, console = T)
+# str.list(l)
+# df = data.frame(x = 2 , y = 1)
+# store.figure(filename = "Test", data = df, lt = l, console = T)
+# str.list(l)
+# df = data.frame(x = 2 , y = 2)
+# store.figure(filename = "Test-New", data = df, lt = l, console = T)
+# str.list(l)
+
+store.figure <- function(filename, data, lt, check = T,
+                        subfolder = "04-Graphics",
+                        console = FALSE,
+                        fun_family = "csv",
+                        envir = rlang::caller_env(),
+                        ...) {
   install("rlang")
 
+  # Extracting names of the data and the list
   data.name = rlang::enexpr(data)
   lt.name = deparse(substitute(lt))
 
-  current.file.name = rev(strsplit(rstudioapi::getSourceEditorContext()$path,
-                                   split = "/")[[1]])[1]
+  # Extracting source file name
+  current.file.name = get.source.file.name()
+
+  # Extracting the file prefix if exists
+  prefix = get.file.prefix(current.file.name)
+
+  # Generating the name of the .Rdata file
   stored.list.file.name = subfolder %/% current.file.name %+%
     "data"
 
+  # Checking whethere .Rdata file already exists in the subfolder
   if (file.exists(stored.list.file.name)) {
+    # If Yes, then load it in a new environment to reduce the name conflicts.
     env.stored = new.env()
     load(stored.list.file.name, envir = env.stored)
-    catn("Data is already saved in: ", stored.list.file.name, "!")
+
+    # Printing various messages of this actions
+    catn("    Data is already saved in:",
+         color = "blue", console = console, newline = F)
+    catn(stored.list.file.name, color = "red", console = console)
+
+    # Setting 'compare' to note if data saved in .Rdata file needs to be compared
     compare = TRUE
   }  else {
     compare = FALSE
   }
 
-  if (is.null(names(lt)) || any("tables" != names(lt))) {
-    lt$tables = list()
-    catn("List tables are empty!")
+  # Checking
+  # 1. Whether a list exists if not create.
+  # 2. Check whether we already have the data with the same name in the list l
+  if (is.null(names(lt)) || any("figures" != names(lt))) {
+    lt$figures = list()
+    catn("    Existing list doesn't contain the figure!",
+         color = "blue", console = console)
   }
 
-  file.index = grepl(filename, names(lt$tables))
+  file.index = filename == names(lt$figures)
 
   if (any(file.index)) {
-    table.name = names(lt$tables)[file.index]
-    filename.n = prefix %+% "_" %+% table.name
+    # Case when figure name exists
+    figure.name = names(lt$figures)[file.index]
+    filename.n = prefix %+% figure.name
 
-    catn("Tables of the name ", filename, "exists!")
-    catn("Data need to rewritten?")
-    if (!identical(lt$tables[[table.name]][[data.name]], data)) {
-      catn("Yes!")
+    catn("    figures of the name",
+         color = "blue", newline = F, console = console)
+    catn(filename, color = "red", newline = F, console = console)
+    catn("' exists!", color = "blue", console = console)
+    catn("    Data need to rewritten?",
+         color = "blue", newline = F, console = console)
+
+    # Checking whether the data is identical as in the list
+    # In case we need to overwrite
+    if (!identical(lt$figures[[figure.name]][[data.name]], data)) {
+      catn(" Yes!", color = "green", console = console)
       write = TRUE
     } else {
-      catn("No!")
+      catn(" No!", color = "red", console = console)
       write = FALSE
     }
+    # Case when figure name doesn't exist!
   } else {
-
-    index = pad.00(length(lt$tables) + 1)
-    table.name = index %+% "_" %+% filename %+% "_[R].csv"
-    filename.n = prefix %+% "_" %+% table.name
-    catn("Creating a list of the name:", filename.n, "!")
+    index = pad.00(length(lt$figures) + 1)
+    figure.name = index %+% "_" %+% filename %+% "_[R].csv"
+    filename.n = prefix %+% figure.name
     write = TRUE
   }
-  catn("write:", write)
-  if (write) {
-    lt1 = paste0(lt.name, "$tables[['", table.name, "']]")
 
-    eval(parse(text = paste0(lt1, "= list()")))
-    eval(parse(text = paste0(lt1, " %<% ", data.name)))
+  # Case when data needs to be written or overwritten
+  if (write) {
+    lt1 = paste0(lt.name, "$figures[['", figure.name, "']]")
+
+    eval(parse(text = paste0(lt1, "= list()")), envir = envir)
+    eval(parse(text = paste0(lt1, " %<% ", data.name)), envir = envir)
+
+    # Case when data needs to be overwritten
     if (compare) {
-      identical(env.stored[[lt.name]]$tables[[table.name]][[data.name]], data)
-      catn("Table data is identical to stored data!")
+      data.same = identical(env.stored[[lt.name]]$figures[[figure.name]][[data.name]], data)
     } else {
-      catn("Writing and saving, .csv and .Rdata!")
-      write_csv.adv(data, file.name = filename.n)
-      eval(parse(text = "save(" %+% lt.name %+% ", file = '" %+% stored.list.file.name %+% "')"))
+      data.same = FALSE
     }
-  } else {
-    print("old")
+
+    # Implementation
+    # Case: No need to write!
+    if (compare & data.same) {
+      catn("    figure data is identical to stored data!",
+           color = "blue", console = console)
+      # Case: Data needs to be freshly saved.
+    } else {
+      catn("    Saving:", color = "blue", newline = F, console = console)
+      catn(filename.n, color = "green", console = console)
+      write_csv.adv(data = data,
+                    file.name = filename.n,
+                    fun_family = fun_family,
+                    ...)
+      eval(parse(text = "save(" %+% lt.name %+% ", file = '" %+% stored.list.file.name %+% "', envir = envir)"))
+    }
   }
   return(invisible())
 }
-
-
-
-filename = "test"
-data = df
-data.name = "df"
-lt = l
-lt.name = "l"
-subfolder = "03-Tables"
-prefix = "01aa"
-
-
-l = list()
-df = data.frame(x = 1 , y = 1)
-store.table(prefix = "01aa", filename = "test", data = df, lt = l)
-str.list(l)
-df = data.frame(x = 2 , y = 1)
-
-store.table(prefix = "01aa", filename = "test", data = df, lt = l)
-str.list(l)
-
-
-store.table(prefix = "01aa", filename = "kachara", data = df, lt = l)
-str.list(l)
-t = function(x){
-  attributes(x)$fille = "name"
-}
-t(x = df)
