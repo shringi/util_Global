@@ -316,6 +316,21 @@ rbind(df, df) %>% get.empty.columns(data = ., group.cols = c1)
 ## ===  ===  ===  ===  ===  ===  ===  ===
 ```
 
+### get.source.file.name()
+
+get current active source file name
+
+#### syntax
+
+    get.source.file.name()
+
+#### usage
+
+``` r
+get.source.file.name()
+## [1] "util_Global.R"
+```
+
 ### str.list()
 
 str.list() command is used to display an internal structure of a list in
