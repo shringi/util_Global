@@ -328,7 +328,7 @@ get current active source file name
 
 ``` r
 get.source.file.name()
-## [1] "util_Global.R"
+## [1] "README.Rmd"
 ```
 
 ### str.list()
@@ -401,6 +401,36 @@ store.table(filename = "test", data = df, lt = l)
 # Following files will be stored in the folder named as `03-Folder`
 # `01_test_[R].csv` `util_Global.Rdata`
 ```
+
+### plot.colors()
+
+There are more than 650 color names in R, plot.color() shows which color
+name appears how. We can even filter out the colors which has some
+partial string
+
+#### syntax
+
+    plot.colors(name = NULL)
+
+#### usage
+
+``` r
+plot.colors()
+```
+
+<img src="README_figs/README-unnamed-chunk-13-1.png" width="672" />
+
+``` r
+plot.colors("dark")
+```
+
+<img src="README_figs/README-unnamed-chunk-13-2.png" width="672" />
+
+``` r
+plot.colors("red")
+```
+
+<img src="README_figs/README-unnamed-chunk-13-3.png" width="672" />
 
 # Scripts
 

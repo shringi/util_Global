@@ -1710,3 +1710,44 @@ store.table <- function(filename, data, lt, check = T,
   }
   return(invisible())
 }
+
+# plot.colors() -----------------------------------------------------------
+# There are more than 650 color names in R, plot.color() shows which color name appears how
+# We can even filter out the colors which has some partial string
+# usage
+# plot.colors()
+# plot.colors("dark")
+# plot.colors("red)
+plot.colors <- function(name = NULL) {
+  install("tidyverse")
+  c = colors()[!stringr::str_detect(colors(), "grey")]
+  if (is.null(name)) {
+    c.sub = c
+  } else {
+    name = stringr::str_to_lower(name)
+    if (name == "grey") {
+      name = "gray"
+        warning("Using American spelling as 'gray'!!")
+    }
+    c.loc = stringr::str_detect(c, name)
+    if (any(c.loc)) {
+      c.sub = c[c.loc]
+    } else {
+      stop("Please put a valid search color name!!")
+    }
+  }
+  n.name = max(floor(length(c.sub)/dplyr::if_else(length(c.sub) > 100, 10, floor(length(c.sub)/10))),1)
+  d = data.frame(c = c.sub,
+                 y = seq(0, length(c.sub) - 1) %% n.name,
+                 x = floor(seq(0, length(c.sub) - 1) / n.name))
+  ggplot2::ggplot() +
+    scale_x_continuous(name="", breaks=NULL, expand=c(0, 0)) +
+    scale_y_continuous(name="", breaks=NULL, expand=c(0, 0)) +
+    scale_fill_identity() +
+    geom_rect(data=d, mapping=aes(xmin=x, xmax=x+1, ymin=y, ymax=y+1), fill="white") +
+    geom_rect(data=d, mapping=aes(xmin=x+0.05, xmax=x+0.95, ymin=y+0.5, ymax=y+1, fill=c)) +
+    geom_text(data=d, mapping=aes(x=x+0.5, y=y+0.5, label=c), colour="black", hjust=0.5, vjust=1, size=3)+
+    labs(title = name)+
+    theme_minimal()
+}
+
