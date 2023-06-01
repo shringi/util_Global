@@ -973,10 +973,45 @@ stat.summary <- function(colTable, group_var, df_in, format = "wide"){
 # pad.00------
 # Pads a number or string with zeros
 pad.00 <- function(string, width = 2, side = "left"){
+  warning("pad.00 is deprecated. Please use pad_decimal() instead.")
   install("stringr")
   str_pad(string = string, width = width, side = side, pad = "0")
 }
+# pad_decimal------
+# Pads a number or string with characters on left or right side.
+# Usage
+# pad_decimal(3.14, 3, 4, " ", "0")
+pad_decimal <- function(x, width_left = 0, width_right = 2, char_left = " ", char_right = "0") {
+  # x: input decimal number
+  # width_left: desired width left side (excluding decimal point)
+  # width_right: desired number of padding digits on the right side
+  # char_left: padding character for the left side
+  # char_right: padding character for the right side
 
+  # split the number into integer and fractional parts
+  int_part <- floor(x)
+  frac_part <- x - int_part
+  install("stringr")
+  # convert the integer part to a character string and pad with specified character from left
+  int_str <- stringr::str_pad(string = int_part, width = width_left, side = "left", pad = char_left)
+
+  # convert the fractional part to a character string and pad with specified character from right
+
+  frac_str <- formatC(round(frac_part, n), digits = n, format = "f")
+
+  # concatenate the integer and fractional parts with a decimal point in between
+  paste(int_str, frac_str, sep = ".")
+}
+format_decimal <- function(x, n) {
+  # Round the number to n decimal places
+  x_rounded <- round(x, n)
+
+  # Convert the rounded number to a character string with n decimal places
+  x_formatted <- formatC(x_rounded, digits = n, format = "f")
+
+  # Return the formatted string
+  return(x_formatted)
+}
 # is.attrib.same ---------------
 # Crosscheck whether two data sets are same in some columns
 # Checks the internal consistency of the data by a particular column
@@ -1129,7 +1164,7 @@ summary.num = function(data){
 summary.non.num = function(data){
   a <- sapply(data,class)
   cols <- names(a[!(a %in% c("numeric", "integer")) ])
-  out <- data.frame(unclass(summary(data %>% dplyr::select(cols))), check.names = FALSE, stringsAsFactors = FALSE)
+  out <- data.frame(unclass(summary(data %>% dplyr::select(all_of(cols)))), check.names = FALSE, stringsAsFactors = FALSE)
   rownames(out) <- NULL
   return(out)
 }
@@ -1719,6 +1754,8 @@ store.table <- function(filename, data, lt, check = T,
 # plot.colors("dark")
 # plot.colors("red)
 plot.colors <- function(name = NULL) {
+  # Adapted from
+  # http://sape.inf.usi.ch/quick-reference/ggplot2/colour
   install("tidyverse")
   c = colors()[!stringr::str_detect(colors(), "grey")]
   if (is.null(name)) {
@@ -1741,13 +1778,41 @@ plot.colors <- function(name = NULL) {
                  y = seq(0, length(c.sub) - 1) %% n.name,
                  x = floor(seq(0, length(c.sub) - 1) / n.name))
   ggplot2::ggplot() +
-    scale_x_continuous(name="", breaks=NULL, expand=c(0, 0)) +
-    scale_y_continuous(name="", breaks=NULL, expand=c(0, 0)) +
+    scale_x_continuous(name = "", breaks = NULL, expand = c(0, 0)) +
+    scale_y_continuous(name = "", breaks = NULL, expand = c(0, 0)) +
     scale_fill_identity() +
-    geom_rect(data=d, mapping=aes(xmin=x, xmax=x+1, ymin=y, ymax=y+1), fill="white") +
-    geom_rect(data=d, mapping=aes(xmin=x+0.05, xmax=x+0.95, ymin=y+0.5, ymax=y+1, fill=c)) +
-    geom_text(data=d, mapping=aes(x=x+0.5, y=y+0.5, label=c), colour="black", hjust=0.5, vjust=1, size=3)+
-    labs(title = name)+
+    geom_rect(data = d, mapping = aes(xmin = x,        xmax = x + 1,
+                                      ymin = y,        ymax = y + 1), fill = "white") +
+    geom_rect(data = d, mapping = aes(xmin = x + 0.05, xmax = x + 0.95,
+                                      ymin = y + 0.5,  ymax = y + 1), fill = c) +
+    geom_text(data = d, mapping = aes(x = x + 0.5,     y = y + 0.5, label = c), colour = "black", hjust = 0.5, vjust = 1, size = 3) +
+    labs(title = name) +
     theme_minimal()
+}
+
+
+# format_num(3.14, width =2) ####
+format_num <- function(x, int.digits = 4, dec.digits = 2,
+                       big.mark = ",",   big.interval = 3L,
+                       small.mark  = ",", small.interval = 5L,
+                       ...) {
+  # Round the number to n decimal places
+  int_part <- floor(x)
+  frac_part <- x - int_part
+
+  if (frac_part == 0) {
+    out = prettyNum(x, width = int.digits, big.mark = big.mark,   big.interval = big.interval,
+                    small.mark  = small.mark, small.interval = small.interval,...)
+  } else {
+    int_str <- prettyNum(int_part, scientific = F, width = int.digits,big.mark = big.mark,   big.interval = big.interval,
+                         small.mark  = small.mark, small.interval = small.interval, ...)
+    # Convert the rounded number to a character string with n decimal places
+    frac_str <- prettyNum(round(frac_part, dec.digits), digits = dec.digits, format = "f", nsmall = dec.digits) |>
+      strsplit(split = "[.]") |> unlist() |> (\(x) x[[2]])()
+
+    out = int_str %+% "." %+% frac_str
+  }
+  # Return the formatted string
+  return(out)
 }
 
