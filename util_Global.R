@@ -1682,11 +1682,12 @@ store.table <- function(filename, data, lt, check = T,
          color = "blue", console = console)
   }
 
-  file.index = filename == names(lt$tables)
+  file.index = str_detect(string = names(lt$tables), pattern = filename)
 
   if (any(file.index)) {
     # Case when table name exists
-    table.name = names(lt$tables)[file.index]
+    table.names = sort(names(lt$tables)[file.index])
+    table.name = table.names[length(table.names)]
     filename.n = prefix %+% table.name
 
     catn("    Tables of the name",
