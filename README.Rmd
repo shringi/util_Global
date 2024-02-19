@@ -235,6 +235,13 @@ plot.colors("dark")
 plot.colors("red")
 
 ```
+### pad_decimal()
+Pads a number or string with characters on left or right side.
+
+#### syntax
+```
+pad_decimal(3.14, n_left = 3, n_right = 4, char_left = " ", char_right = "0")
+```
 
 # Scripts
 

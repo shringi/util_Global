@@ -14,8 +14,11 @@ activity](https://img.shields.io/github/commit-activity/y/shringi/util_Global)
 ![GitHub last
 commit](https://img.shields.io/github/last-commit/shringi/util_Global)
 
-![GitHub
-issues](https://img.shields.io/github/issues/shringi/util_Global)
+<figure>
+<img src="https://img.shields.io/github/issues/shringi/util_Global"
+alt="GitHub issues" />
+<figcaption aria-hidden="true">GitHub issues</figcaption>
+</figure>
 
 # Motivation
 
@@ -397,6 +400,8 @@ store.table(filename = "test", data = df, lt = l)
 ## [1] "rlang not loaded."
 ## [1] "rlang is already installed!"
 ## [1] "rlang has been loaded now."
+## Warning in pad.00(length(lt$tables) + 1): pad.00 is deprecated. Please use
+## pad_decimal() instead.
 
 # Following files will be stored in the folder named as `03-Folder`
 # `01_test_[R].csv` `util_Global.Rdata`
@@ -430,7 +435,13 @@ plot.colors("dark")
 plot.colors("red")
 ```
 
-<img src="README_figs/README-unnamed-chunk-13-3.png" width="672" />
+<img src="README_figs/README-unnamed-chunk-13-3.png" width="672" /> \###
+pad_decimal() Pads a number or string with characters on left or right
+side.
+
+#### syntax
+
+    pad_decimal(3.14, n_left = 3, n_right = 4, char_left = " ", char_right = "0")
 
 # Scripts
 

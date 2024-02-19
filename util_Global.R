@@ -1785,8 +1785,8 @@ plot.colors <- function(name = NULL) {
     geom_rect(data = d, mapping = aes(xmin = x,        xmax = x + 1,
                                       ymin = y,        ymax = y + 1), fill = "white") +
     geom_rect(data = d, mapping = aes(xmin = x + 0.05, xmax = x + 0.95,
-                                      ymin = y + 0.5,  ymax = y + 1), fill = c) +
-    geom_text(data = d, mapping = aes(x = x + 0.5,     y = y + 0.5, label = c), colour = "black", hjust = 0.5, vjust = 1, size = 3) +
+                                      ymin = y + 0.5,  ymax = y + 1), fill = c.sub) +
+    geom_text(data = d, mapping = aes(x = x + 0.5,     y = y + 0.5, label = c.sub), colour = "black", hjust = 0.5, vjust = 1, size = 3) +
     labs(title = name) +
     theme_minimal()
 }
