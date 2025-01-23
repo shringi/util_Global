@@ -9,7 +9,7 @@
 
 # Installing and Loading Packages ------------------------------------
 # `install("dplyr")`
-install <- function(package1, ...)
+install <- function(package1, load = TRUE, ...)
 {
   # convert arguments to vector
   packages <- c(package1, ...)
@@ -32,15 +32,18 @@ install <- function(package1, ...)
 
       if (installed[p]) {
         print(paste(p, "is already installed!"))
-        suppressPackageStartupMessages(do.call("library", list(p)))
-        print(paste(p, "has been loaded now."))
       } else {
         print(paste(p, "is not installed!"))
         print(paste(p, "is being installed."))
         install.packages(p, dependencies = TRUE)
         print(paste(p, "has been installed."))
+      }
+
+      if (load) {
         suppressPackageStartupMessages(do.call("library", list(p)))
         print(paste(p, "has been loaded now."))
+      } else {
+        print(paste(p, "is not loaded!"))
       }
     }
   }
@@ -997,7 +1000,7 @@ pad_decimal <- function(x, width_left = 0, width_right = 2, char_left = " ", cha
 
   # convert the fractional part to a character string and pad with specified character from right
 
-  frac_str <- formatC(round(frac_part, n), digits = n, format = "f")
+  frac_str <- formatC(round(frac_part, width_right), digits = width_right, format = "f")
 
   # concatenate the integer and fractional parts with a decimal point in between
   paste(int_str, frac_str, sep = ".")
