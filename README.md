@@ -1,7 +1,7 @@
 Util_Global.R
 ================
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Please edit that file  -->
 
 ![GitHub top
 language](https://img.shields.io/github/languages/top/shringi/util_Global)
@@ -25,8 +25,7 @@ alt="GitHub issues" />
 R and its package repository are great. I could find almost all kinds of
 functions, various tricks and tips online. However, as I worked on R and
 R studio long enough. I happen to create custom functions which I find
-it convenient to use for my purpose. I slowly began to realize that I
-should share some of them with others in case they find it helpful.
+it convenient to use for my purpose. I am sharing some of them here in case others also find it helpful.
 
 # Functions
 
